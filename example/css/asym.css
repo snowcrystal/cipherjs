@@ -1,0 +1,337 @@
+
+/**
+ * COLORS:
+ * dark background: #232323
+ * grey foreground: #4f4f4f
+ * light grey foreground: #acacac
+ * white foreground: #ffffff
+ * blue: #599aa8     pastel: 
+ * green: #227d5b    pastel: 
+ * yellow: #dca470   pastel: 
+ * red: #e56f69      pastel: 
+ * purple: #695c8d   pastel: 
+ * */
+
+*, html, body{
+	/* color setting for everything that is not part of the 
+	 * application, i.e. for ads and "powered by blubb blubb hosting" ;)
+	 * */
+	 color: #4f4f4f;
+	 background: #232323;
+}
+*.main{
+	/*
+	 * default color for everything part of the application
+	 * */
+	color: #ffffff;
+	background: #232323;
+}
+strong.main{
+	font-weight: bold !important;
+}
+em.main{
+	
+}
+
+div.main{
+	display: none;
+	width: 100%;
+	height: 100%;
+	font-size: 14px;
+	font-weight: normal;
+}
+div.main *{
+	font-size: 14px;
+	font-weight: normal;
+}
+
+/**
+ * ALL
+ * */
+p.main.asym.backlink{
+	position: fixed;
+	top: 8px;
+	right: 0px;
+	font-size: 16px;
+	font-weight: bold;
+	text-align: center;
+	padding: 0px;
+	padding-left: 20%;
+	padding-bottom: 20%;
+	margin: 4px;
+	border: none;
+	color: transparent;
+	background: transparent;
+}
+p.main.asym.backlink span{
+	display: none;
+	padding: 4px;
+	margin-right: 4px;
+	/*color: transparent;*/
+	color: white;
+	font-weight: bold;
+	background: #695c8d;
+	cursor: default;
+}
+p.main.asym.backlink:hover span{
+	display: block;
+	/*color: white; */ /*background: #232323;*/
+	border: 1px dashed white;
+	border-radius: 3px;
+	moz-border-radius: 3px;
+	webkit-border-radius: 3px;
+	cursor: pointer;
+}
+
+h1.main{
+	font-size: 18px;
+	font-weight: bold;
+	text-align: center;
+	margin: auto;
+	margin-bottom: 24px;
+}
+h2.main{
+	font-size: 16px;
+	font-weight: bold;
+	margin: auto;
+	margin-bottom: 16px;
+}
+p.main.asym{
+	margin-top: 12px;
+	margin-bottom: 16px;
+}
+input.main.asym{
+	color: white;
+	width: 120px;
+	border: 1px dashed white;
+	border-radius: 5px;
+	moz-border-radius: 5px;
+	webkit-border-radius: 5px;
+	padding: 2px;
+	margin-top: 4px;
+}
+button.main.asym{
+	font-weight: bold;
+	display: block;
+	margin-top: 12px;
+	margin-bottom: 16px;
+	padding: 2px;
+	border: 1px dashed white;
+	border-radius: 5px;
+	moz-border-radius: 5px;
+	webkit-border-radius: 5px;
+}
+textarea.main.asym{
+	margin-bottom: 16px;
+	border: 1px dashed white;
+	color: white; 
+	width: 98%;
+	height: 15%; min-height: 100px;
+	border-radius: 5px;
+	moz-border-radius: 5px;
+	webkit-border-radius: 5px;
+}
+input.main.asym.encrypt, input.main.asym.decrypt, input.main.asym.sign, input.main.asym.verify, input.main.asym.encryptsign, input.main.asym.decryptverify{
+	margin-bottom: 16px;
+	display: inline-block;
+}
+
+/*
+ * OVERLAY
+ * */
+div.main.asym.overlay p.main.asym.overlay{
+	text-align: center;
+	font-size: 36px;
+	font-weight: bold;
+	color: #695c8d;
+	margin-top: 10%;
+}
+
+/**
+ * INIT
+ * */
+div.main.init{
+	text-align: center;
+}
+p.main.asym.init#entropy{
+	display: block;
+	padding: 24px;
+	margin-bottom: 16px;
+	font-size: 18px;
+	font-weight: bold;
+	border: 1px solid #232323;
+	color: #695c8d;
+}
+p.main.asym.init#entropy_info{
+	display: block;
+	font-size: 16px;
+	font-weight: bold;
+	color: #695c8d;
+	text-align: center;
+}
+
+/**
+ * NAVIGATION
+ * */
+
+ul.main.asym.nav{
+	display: block;
+	list-style-type: none;
+	margin: auto;
+	text-align: center;
+}
+li.main.asym.nav{
+	min-width: 150px;
+	width: 20%;
+	display: inline-block;
+	padding: 4px;
+	margin: 2px;
+}
+li.main.asym.nav.placeholder{
+	display: block;
+}
+li.main.asym.nav.button{
+	padding-top: 6px;
+	padding-bottom: 6px;
+	color: #ffffff;
+	font-size: 16px;
+	font-weight: bold;
+	border: 1px solid #232323;
+	border-radius: 6px;
+	moz-border-radius: 6px;
+	webkit-border-radius: 6px;
+	cursor: pointer;
+}
+li.main.asym.nav.button.gen{
+	background: #e56f69;
+}
+li.main.asym.nav.button.enc{
+	background: #599aa8;
+}
+li.main.asym.nav.button.sig{
+	background: #dca470;
+}
+li.main.asym.nav.button.encsig{
+	background: #227d5b;
+}
+li.main.asym.nav.button.info{
+	background: #695c8d;
+}
+li.main.asym.nav.button:hover{
+	border: 1px dashed #4f4f4f;
+	color: #232323;
+}
+
+/**
+ * GENERATE
+ * */
+h1.main.generate{
+	color: #e56f69;
+}
+h2.main.generate{
+	color: #e56f69;
+}
+select.main.asym.generate{
+	background: #e56f69;
+	color: white;
+}
+option.main.asym.generate{
+	background: #e56f69;
+	color: white;
+}
+input.main.asym.generate{
+	background: #e56f69;
+	width: 120px;
+	display: inline-block;
+	color: white;
+}
+label.main.asym.generate{
+	width: 120px;
+	display: inline-block;
+	color: white;
+}
+button.main.asym.generate{
+	background: #e56f69;
+	border: 1px dashed #e56f69;
+}
+button.main.asym.generate:hover{
+	color: #232323;
+	border: 1px dashed #232323;
+}
+textarea.main.asym.generate{
+	border: 1px dashed #e56f69;
+}
+
+/**
+ * ENCRYPT, DECRYPT
+ * */
+h1.main.asym.encrypt, h2.main.asym.encrypt, h1.main.asym.decrypt, h2.main.asym.decrypt{
+	color: #599aa8;
+}
+textarea.main.asym.encrypt, textarea.main.asym.decrypt{
+	border: 1px dashed #599aa8;
+}
+button.main.asym.encrypt, button.main.asym.decrypt{
+	background: #599aa8;
+}
+button.main.asym.encrypt:hover, button.main.asym.decrypt:hover{
+	color: #232323;
+	border: 1px dashed #232323;
+}
+input.main.asym.encrypt, input.main.asym.decrypt{
+	border: 1px dashed #599aa8;
+}
+
+/**
+ * SIGN, VERIFY
+ * */
+h1.main.asym.sign, h2.main.asym.sign, h1.main.asym.verify, h2.main.asym.verify{
+	color: #dca470;
+}
+textarea.main.asym.sign, textarea.main.asym.verify{
+	border: 1px dashed #dca470;
+}
+button.main.asym.sign, button.main.asym.verify{
+	background: #dca470;
+}
+button.main.asym.sign:hover, button.main.asym.verify:hover{
+	color: #232323;
+	border: 1px dashed #232323;
+}
+input.main.asym.sign, input.main.asym.verify{
+	border: 1px dashed #dca470;
+}
+
+/*
+ * ENCRYPTSIGN, DECRYPTVERIFY
+ * */
+h1.main.asym.encryptsign, h2.main.asym.encryptsign, h1.main.asym.decryptverify, h2.main.asym.decryptverify{
+	color: #227d5b;
+}
+textarea.main.asym.encryptsign, textarea.main.asym.decryptverify{
+	border: 1px dashed #227d5b;
+}
+button.main.asym.encryptsign, button.main.asym.decryptverify{
+	background: #227d5b;
+}
+button.main.asym.encryptsign:hover, button.main.asym.decryptverify:hover{
+	color: #232323;
+	border: 1px dashed #232323;
+}
+input.main.asym.encryptsign, input.main.asym.decryptverify{
+	border: 1px dashed #227d5b;
+}
+
+/*
+ * INFO
+ * */
+ h2.main.asym.info{
+	color: #695c8d;
+ }
+ h3.main.asym.info{
+	font-weight: bold;
+	color: #695c8d;
+ }
+ .main.asym.info strong{
+	color: #695c8d;
+ }

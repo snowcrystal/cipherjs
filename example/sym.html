@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<!--<meta name="robots" content="noindex, nofollow">-->
+		<meta name="robots" content="index, follow">
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+		<meta name="description" content = "cipherJS aes example">
+		<meta name="keywords" content = "cipherjs, javascript cipher js, javascript encryption, javascript cryptography, ecc, ecdsa, asynchronous javascript encryption, asymmetric javascript encryption, pgp javascript, openpgp javascript, aes, twofish, serpent, rijndael, asynchronous ecc, ecc rsa javascript, sha javascript, sha1, sha256, sha512, sha javascript, hash, encryption javascript, javascript crypto library, js crypto">
+		<link rel="stylesheet" type="text/css" href="./css/default.css" title="default">
+		<link rel="stylesheet" type="text/css" href="./css/sym.css" title="default">
+		<!--XUI LIBRARY, *NOT* A DEPENDENCY OF cipherJS, JUST A GREAT LIBRARY -->
+		<script type="text/javascript" src="./js/xui/xui.min.js"></script>
+		<!-- SCROLLING CONTROL VIA JAVASCRIPT -->
+		<script type="text/javascript" src="./js/scroll.js"></script>
+		<!-- cipherJS compressed -->
+		<script src="../bin/sjcl.min.js" type="text/javascript"></script> 
+		<script src="../bin/titaniumcore.cipher.min.js" type="text/javascript"></script> 
+		<script src="../bin/cipherjs.min.js" type="text/javascript"></script>
+		<!-- cipherJS -->
+		<!-- SJCL -->
+		<!--<script type="text/javascript" src="../src/sjcl/sjcl.js"></script>
+		<script type="text/javascript" src="../src/sjcl/aes.js"></script> 
+		<script type="text/javascript" src="../src/sjcl/bitArray.js"></script> 
+		<script type="text/javascript" src="../src/sjcl/codecString.js"></script> 
+		<script type="text/javascript" src="../src/sjcl/codecHex.js"></script> 
+		<script type="text/javascript" src="../src/sjcl/codecBase64.js"></script> 
+		<script type="text/javascript" src="../src/sjcl/codecBytes.js"></script> 
+		<script type="text/javascript" src="../src/sjcl/sha256.js"></script> 
+		<script type="text/javascript" src="../src/sjcl/sha512.js"></script> 
+		<script type="text/javascript" src="../src/sjcl/sha1.js"></script> 
+		<script type="text/javascript" src="../src/sjcl/ccm.js"></script> 
+		<script type="text/javascript" src="../src/sjcl/cbc.js"></script> 
+		<script type="text/javascript" src="../src/sjcl/ocb2.js"></script> 
+		<script type="text/javascript" src="../src/sjcl/gcm.js"></script> 
+		<script type="text/javascript" src="../src/sjcl/hmac.js"></script> 
+		<script type="text/javascript" src="../src/sjcl/pbkdf2.js"></script> 
+		<script type="text/javascript" src="../src/sjcl/random.js"></script> 
+		<script type="text/javascript" src="../src/sjcl/convenience.js"></script> 
+		<script type="text/javascript" src="../src/sjcl/bn.js"></script> 
+		<script type="text/javascript" src="../src/sjcl/ecc.js"></script> 
+		<script type="text/javascript" src="../src/sjcl/srp.js"></script>-->
+		<!-- TITANIUM CORE SYMMETRIC CIPHERS -->
+		<!--<script type="text/javascript" src="../src/titaniumcore/tools/packages.js"></script>
+		<script type="text/javascript" src="../src/titaniumcore/tools/binary.js"></script>
+		<script type="text/javascript" src="../src/titaniumcore/Cipher.js"></script>-->
+		<!-- OWN SCRIPTS -->
+		<!--<script type="text/javascript" src="../src/tools.js"></script>
+		<script type="text/javascript" src="../src/cipherjs.js"></script>
+		<script type="text/javascript" src="../src/encoding.js"></script>
+		<script type="text/javascript" src="../src/mask.js"></script>
+		<script type="text/javascript" src="../src/random.js"></script>
+		<script type="text/javascript" src="../src/hash.js"></script>
+		<script type="text/javascript" src="../src/sym.js"></script>
+		<script type="text/javascript" src="../src/asym.js"></script>
+		<script type="text/javascript" src="../src/simpleasym.js"></script>-->
+		<!-- TITLE -->
+		<title>Symmetric Encryption Example</title>
+	</head>
+	<body>
+		<noscript class="main">
+			Sorry, but this page works with Javascript.
+		</noscript>
+		<div class="main sym overlay" id="overlay">
+			<p class="main sym overlay">
+				...
+			</p>
+		</div>
+		<div class="main sym init" id="init">
+			<p class="main sym init" id="entropy">
+			</p>
+			<p class="main sym init" id="entropy_info">
+			</p>
+		</div>
+		<div class="main sym app" id="app">
+			<h1 class="main sym app">Encrypt or Decrypt a message</h1>
+			<p class="main sym app">
+				To encrypt a text, enter it in the text input, enter the 
+				password to use for encryption and press "Encrypt". The
+				ciphertext will appear in the output below the buttons.<br>
+				To decrypt a text, enter it in the text input as well, and,
+				if you enter the correct password before pressing "Decrypt",
+				you'll see the (decrypted) cleartext in the text output.
+			</p>
+			<p class="main sym app">
+				This page encrypts using AES, with a keysize of 256 bit, 
+				in OCB2 mode, with an authentication strength of 128 bit, and
+				1000 PBKDF2 iterations improving your password. <br>
+				However, even if this encryption is pretty strong - security
+				<strong class="main">depends on your password</strong>. No
+				encryption, no matter how strong, will make up for a weak or
+				easy to guess password.
+			</p>
+			<textarea class="main sym app" id="input_app">
+			</textarea>
+			<label class="main sym app" for="pass_app">Password:</label>
+			<input type="password" class="main sym app" id="pass_app">
+			<button class="main sym app" id="enc_app">Encrypt</button>
+			<button class="main sym app" id="dec_app">Decrypt</button>
+			<textarea class="main sym app" id="output_app" readonly>
+			</textarea>
+		</div>
+		<script src="./js/sym.js" type="text/javascript"></script>
+	</body>
+</html>
