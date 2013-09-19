@@ -82,7 +82,7 @@
 			</p>
 			<p class="main">
 				cipherJS tries to make encryption as easy to access and simple to use as
-				possible. Almost all input and output is text-based. 
+				possible. Almost all functions work with text based input and output. 
 				Asynchronous execution of longer running functions avoids
 				slowness and hitting browser limits.<br>
 				Still, always be more careful with cryptography than with other parts
@@ -132,8 +132,8 @@
 				and signing. There has been a lot of controversy and discussion about
 				whether ECC, especially NIST-ECC, can be considered secure or may
 				contain a backdoor (yet, no backdoor has been found).<br> Compared to 
-				rather young or unstable implementations of Curve25519 (and cipherJS would not
-				rely on ECDH alone) and RSA keys which would either be too small or too slow (sorry),
+				rather young or unstable implementations of Curve25519 and RSA 
+				keys which would either be too small or too slow (sorry),
 				NIST ECC still appears to be the best choice at the moment. More way of asymmetric
 				encryption may follow.
 			</p>
@@ -672,8 +672,8 @@
 			</pre>
 			<h3 class="main">Settings</h3>
 			<p class="main">
-				By default, all algorithms work with 256 bit keys, and use
-				PBKDF2 (1000 iterations) for creating encryption keys from
+				By default, all algorithms work with 256 bit keys. cipherJS uses 
+				PBKDF2 (1000 iterations) to create strong encryption keys from
 				passwords.
 			</p>
 			<p class="main">
