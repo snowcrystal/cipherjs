@@ -130,12 +130,10 @@
 			<p class="main">
 				Please note that cipherJS uses ECC (NIST curves) for asymmetric encryption
 				and signing. There has been a lot of controversy and discussion about
-				whether ECC, especially NIST-ECC, can be considered secure or may
-				contain a backdoor (yet, no backdoor has been found).<br> Compared to 
-				rather young or unstable implementations of Curve25519 and RSA 
-				keys which would either be too small or too slow (sorry),
-				NIST ECC still appears to be the best choice at the moment. More way of asymmetric
-				encryption may follow.
+				whether NIST-ECC is secure or if there is a backdoor.
+				<br>
+				cipherJS may use the <a href="http://www.ecc-brainpool.org" target="_blank">Brainpool</a> 	
+			        standard instead of NIST curves in future implementations.
 			</p>
 		</div>
 		<h1 class="main" id="api">API Docs</h1>
