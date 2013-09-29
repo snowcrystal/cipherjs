@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<!--<meta name="robots" content="noindex, nofollow">-->
+		<meta name="robots" content="index, follow">
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+		<meta name="description" content = "cipherJS hash example">
+		<meta name="keywords" content = "cipherjs, javascript cipher js, javascript encryption, javascript cryptography, ecc, ecdsa, asynchronous javascript encryption, asymmetric javascript encryption, pgp javascript, openpgp javascript, aes, twofish, serpent, rijndael, asynchronous ecc, ecc rsa javascript, sha javascript, sha1, sha256, sha512, sha javascript, hash, encryption javascript, javascript crypto library, js crypto">
+		<link rel="stylesheet" type="text/css" href="./css/default.css" title="default">
+		<link rel="stylesheet" type="text/css" href="./css/hash.css" title="default">
+		<!--XUI LIBRARY, *NOT* A DEPENDENCY OF cipherJS, JUST A GREAT LIBRARY -->
+		<script type="text/javascript" src="./js/xui/xui.min.js"></script>
+		<!-- SCROLLING CONTROL VIA JAVASCRIPT -->
+		<script type="text/javascript" src="./js/scroll.js"></script>
+		<!-- cipherJS compressed -->
+		<script src="../bin/sjcl.min.js" type="text/javascript"></script>
+		<script src="../bin/jsbn.min.js" type="text/javascript"></script>
+		<script src="../bin/titaniumcore.cipher.min.js" type="text/javascript"></script>
+		<script src="../bin/cipherjs.min.js" type="text/javascript"></script> 
+		<!-- TITLE -->
+		<title>Hash Example</title>
+	</head>
+	<body>
+		<noscript class="main">
+			Sorry, but this page works with Javascript.
+		</noscript>
+		<div class="main hash overlay" id="overlay">
+			<p class="main hash overlay">
+				...
+			</p>
+		</div>
+		<div class="main hash init" id="init">
+			<p class="main hash init" id="entropy">
+			</p>
+			<p class="main hash init" id="entropy_info">
+			</p>
+		</div>
+		<div class="main hash app" id="app">
+			<p class="main hash app outer">
+			<label class="main hash app" for="select_hash_app">Hash:</label>
+			<select class="main hash app" id="select_hash_app">
+				<option class="main hash app" value="sha1">SHA1</option>
+				<option class="main hash app" value="sha256" selected>SHA256</option>
+				<option class="main hash app" value="sha512">SHA512</option>
+			</select>
+			</p>
+			<p class="main hash app outer">
+			<label class="main hash app" for="select_enc_app">Encoding:</label>
+			<select class="main hash app" id="select_enc_app">
+				<option class="main hash app" value="hex" selected>Hex</option>
+				<option class="main hash app" value="base64">Base64</option>
+			</select>
+			</p>
+			<p class="main hash app">Enter some text to hash below:</p>
+			<textarea class="main hash app" id="input_app">
+			</textarea>
+			<button class="main hash app" id="button_app">Hash</button>
+			<textarea class="main hash app" id="output_app" readonly>
+			</textarea>
+		</div>
+		<script src="./js/hash.js" type="text/javascript"></script>
+	</body>
+</html>

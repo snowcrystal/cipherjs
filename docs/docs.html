@@ -1,0 +1,1687 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<!--<meta name="robots" content="noindex, nofollow">-->
+		<meta name="robots" content="index, follow">
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+		<meta name="description" content = "Documentation for cipherJS">
+		<meta name="keywords" content = "cipherjs, javascript cipher js, javascript encryption, javascript cryptography, ecc, ecdsa, asynchronous javascript encryption, asymmetric javascript encryption, pgp javascript, openpgp javascript, aes, twofish, serpent, rijndael, asynchronous ecc, ecc rsa javascript, sha javascript, sha1, sha256, sha512, sha javascript, hash, encryption javascript, javascript crypto library, js crypto">
+		<link rel="stylesheet" type="text/css" href="./css/default.css" title="default">
+		<title>cipherJS documentation</title>
+	</head>
+	<body>
+		<!--<div class="main backlink">-->
+			<p class="main backlink"><a class="main backlink" href="#docs_top">Back</a></p>
+		<!--</div>-->
+		<div class="main" id="docs_top">
+			<ul class="main outer">
+				<li class="main outer"><a href="#cipherjs">cipherJS</a></li>
+				<li class="main outer">
+					<ul class="main inner">
+						<li class="main inner"><a href="#about">About</a></li>
+						<li class="main inner"><a href="#credits">Credits</a></li>
+						<li class="main inner"><a href="#warning">Warning</a></li>
+					</ul>
+				</li>
+				<li class="main outer"><a href="#api">API Docs</a></li>
+				<li class="main outer">
+					<ul class="main inner">
+						<li class="main inner"><a href="#init">cipherJS.init</a></li>
+						<li class="main inner"><a href="#add">Additional functions</a></li>
+						<li class="main inner"><a href="#random">cipherJS.random</a></li>
+						<li class="main inner"><a href="#enc">cipherJS.enc</a></li>
+						<li class="main inner"><a href="#mask">cipherJS.mask</a></li>
+						<li class="main inner"><a href="#hash">cipherJS.hash</a></li>
+						<li class="main inner"><a href="#sym">cipherJS.sym</a></li>
+						<li class="main inner"><a href="#asymsimple">cipherJS.asym.simple</a></li>
+						<li class="main inner"><a href="#asym">cipherJS.asym</a></li>
+					</ul>
+				</li>
+				<li class="main outer"><a href="#async">Asynchronous Javascript</a></li>
+				<li class="main outer">
+					<ul class="main inner">
+						<li class="main inner"><a href="#async_general">Asynchronous functions in Javascript</a></li>
+						<li class="main inner"><a href="#async_cipherjs">Asynchronous functions in cipherJS</a></li>
+					</ul>
+				</li>
+				<li class="main outer"><a href="#dangers">Dangers of (Javascript) cryptography</a></li>
+				<li class="main outer">
+					<ul class="main inner">
+						<li class="main inner"><a href="#transmit">Transmitting scripts to the client</a></li>
+						<li class="main inner"><a href="#keystorage">Storing keys on a server</a></li>
+						<li class="main inner"><a href="#transparency">Trust in your application</a></li>
+						<li class="main inner"><a href="#mim">The man in the middle attack</a></li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+		<h1 class="main" id="cipherjs">cipherJS</h1>
+		<div class="main" id="about">
+			<!--<h2 class="main">About cipherJS</h2>-->
+			<p class="main">
+				cipherJS is a client side Javascript encryption library. It provides
+				symmetric and asymmetric encryption as well as hashing, encoding and
+				random numbers and strings.
+			</p>
+			<p class="main">
+			To use cipherJS, include the following lines in a document's head:
+				<br>
+				<code class="main">
+					&lt;script src="/path/to/sjcl.min.js" type="text/javascript"&gt;&lt;/script&gt;
+					<br>
+					&lt;script src="/path/to/jsbn.min.js" type="text/javascript"&gt;&lt;/script&gt;
+					<br>
+					&lt;script src="/path/to/titaniumcore.cipher.min.js" type="text/javascript"&gt;&lt;/script&gt;
+					<br>
+					&lt;script src="/path/to/cipherjs.min.js" type="text/javascript"&gt;&lt;/script&gt;
+				</code>
+			</p>
+			<p class="main">
+				cipherJS is made for web applications, add-ons, any kind of client side
+				HTML5 app, but not for client-server-encryption. 
+				It is not "cheap SSL".
+			</p>
+			<p class="main">
+				cipherJS tries to make encryption as easy to access and simple to use as
+				possible.
+				<br>
+				Still, always be more careful with cryptography than with other parts
+				of an application. Most code will tell you soon when there is a bug. 
+				Cryptography may just "work" until cracked. Read the docs, think what an
+				attacker would do to break your security: Most flaws found in recent
+				HTML5 crypto apps would've been avoidable.<br>
+				Please do not forget cipherJS still is experimental software - don't rely
+				on it in extremely dangerous situations, use more well tested, mature
+				applications.
+			</p>
+		</div>
+		<div class="main" id="credits">
+			<h2 class="main">Credits</h2>
+			<p class="main">
+				cipherJS did <strong class="main">not</strong> implement all the algorithms
+				once more. It uses: <br>
+				<a href="http://www-cs-students.stanford.edu/~tjw/jsbn/" target="_blank" style="display: block;">JSBN</a>
+				<a href="https://github.com/bitcoinjs/bitcoinjs-lib" target="_blank" style="display: block;">bitjoinjs-lib</a>
+				<a href="https://github.com/bitwiseshiftleft/sjcl" target="_blank" style="display: block;">SJCL</a>
+				<a href="http://ats.oka.nu/titaniumcore/js/crypto/readme.txt" target="_blank" style="display: block;">titaniumcore</a>
+			</p>
+			<p class="main">
+				JSBN was slightly modified and can be seen as a fork. RSA is not included in
+				cipherJS' jsbn.min.js. Long-running ECC calculations (point multiplication)
+				can now be executed asynchronously, and the parameters for 
+				Brainpool standard curves (<a href="http://www.ecc-brainpool.org/ecc-standard.htm" target="_blank">ecc-brainpool.org</a>,
+				<a href="http://www.ecc-brainpool.org/download/Domain-parameters.pdf" target="_blank">Domain Parameters</a>)
+				were added.
+				<br>
+				The RNG now uses better seeds, i.e. can use <code class="main">
+				crypto.getRandomValues</code> and SJCL's RNG if it is available (what
+				is the case in cipherJS, so that makes sense).
+			</p>
+			<p class="main">
+				Most components from SJCL - encoding, hashing, symmetrical encryption - are 
+				included, but not SRP, ECC and SCJL's Big Number library.
+				<br>
+				From titaniumcore, only the symmetric cipher implementations are used.
+				These provide Rijndael, Twofish and Serpent in cipherJS.
+			</p>
+			<p class="main">
+				bitjoinjs-lib implemented ECDSA based on JSBN's ECC functions. cipherJS adapts
+				these implementations.
+			</p>
+		</div>
+		<div class="main" id="warning">
+			<h2 class="main">Warning</h2>
+			<p class="main">
+				cipherJS may make cryptography in Javascript easier, but it still 
+				is a beta library: <strong class="main">Do not use it in 
+				extremely dangerous situations, rely on more well tested 
+				applications</strong>.
+			</p>
+			<p class="main">
+				Be extremely careful with cryptography. Read all the
+				docs, think what an attacker would do, do not promise 100% security.
+				Be honest when describing your application.
+			</p>
+			<!--<p class="main">
+			<-- FIXED, cipherJS uses brainpool curves now ;)
+				Please note that cipherJS uses ECC (NIST curves) for asymmetric encryption
+				and signing. There has been a lot of controversy and discussion about
+				whether NIST-ECC is secure or if there is a backdoor.
+				<br>
+				cipherJS may use the <a href="http://www.ecc-brainpool.org" target="_blank">Brainpool</a> 	
+			        standard instead of NIST curves in future implementations.
+			</p>-->
+		</div>
+		<h1 class="main" id="api">API Docs</h1>
+		<div class="main" id="init">
+			<h2 class="main">cipherJS.init</h2>
+			<p class="main">
+				cipherJS must be initialized before usage, which means 
+				collecting a lot of random values.<br>
+				If <code class="main">crypto.getRandomValues</code> is found, this
+				is very fast, not even noticed by a user. <br>
+				If <code class="main">crypto.getRandomValues</code> is not present, 
+				random values have to be collected from random mouse- or touchmoves. 
+				(<code class="main">Math.random</code> usually is not cryptographically random, so
+				can't be used here). 
+			</p>
+			<h2 class="main">cipherJS.init.init</h2>
+			<strong class="main"><code class="main">cipherJS.init.init(entropyId, doneDOMObj, entropyInfoId, doneInfoDOMObj)</code></strong>
+			<p class="main">
+				cipherJS provides the <code class="main">cipherJS.init</code> method to 
+				collect random values and update the page when cipherJS is initialised.
+				<br>
+				Please check the examples to see how to use <code class="main">cipherJS.init</code>
+				correctly.
+			</p>
+<pre class="main">
+/**
+* Initiate SJCL's PRNG by collecting random values from mouse/ touchpad,
+* crypto.getRandomValues and Math.random (yes, it is not secure
+* in all browsers - that's what getRandomValues and the mouse thing are for).
+* events.
+* ----------------------------------------------------------------------
+* @param   {String}    entropyId        ID of the element where the progress
+*                                       of collection will be shown and where
+*                                       the doneDOMObj will be displayed when 
+*                                       enough values have been collected.
+* @param   {DOMObject} doneDOMObj       DOM object to display when values
+*                                       have been collected.
+* @param   {String}    entropyInfoId    (Optional) ID of the element where you
+*                                       provide some info like "Move your 
+*                                       mouse or use your fingers on your 
+*                                       touchpad/ touchscreen as randomly 
+*                                       as possible until you see a 100% and the
+*                                       proceed button below".
+*                                       This message will disappear and @doneInfoDOMObj
+*                                       will be shown when entropy is collected (i.e.
+*                                       if crypto.getRandomValues is available, so
+*                                       users won't see this message at all, or when 
+*                                       they've moved long enough for entropy to be 
+*                                       collected).
+* @param   {DOMObject} doneInfoDOMObj   (Optional) Can be something empty or whatever you wish to
+*                                       additionally tell the user (such as "Click on the
+*                                       proceed button below to go to our page") after
+*                                       entropy has been collected.
+* */
+</pre>
+		</div>
+		<div class="main" id="add">
+			<h2 class="main">Additional functions</h2>
+			<p class="main">
+				cipherJS extends <code class="main">String.prototype</code>
+				to provide additional string related functions.
+			</p>
+			<p class="main">
+				If <code class="main">crypto.getRandomValues</code> is available,
+				<code class="main">Math.random</code> is overwritten using <code class="main">getRandomValues</code>
+				to provide a cryptographically random <code class="main">Math.random</code>. 
+				Please don't rely on this as <code class="main">getRandomValues</code> is not
+				available in all browsers.
+			</p>
+			<h3 class="main">String.prototype.replaceAll</h3>
+			<strong class="main"><code class="main">String.prototype.replaceAll(find, replace)</code></strong>
+			<p class="main"></p>
+<pre class="main">
+/**
+* Replaces all occurences of @find with @replace.
+* ---------------------------------------------------------------------
+* @param   {String}   find      String to replace
+* @param   {String}   replace   String to replace @find with
+* @return  {String}
+* */
+</pre>
+			<h3 class="main">String.prototype.startsWith</h3>
+			<strong class="main"><code class="main">String.prototype.startsWith(str)</code></strong>
+			<p class="main">
+			</p>
+<pre class="main">
+/**
+* Checks if a string starts with another.
+* ---------------------------------------------------------------------
+* @param  {String} str
+* @return {String}
+* */
+</pre>
+		<h3 class="main">String.prototype.trim</h3>
+		<strong class="main"><code class="main">String.prototype.trim()</code></strong>
+		<p class="main">
+		</p>
+<pre class="main">
+/**
+* Trim a given String, i.e. remove whitespaces at the beginning and end.
+* ---------------------------------------------------------------------
+* @return {String}
+* */
+</pre>
+		<h3 class="main">String.prototype.allTrim</h3>
+		<strong class="main"><code class="main">String.prototype.allTrim()</code></strong>
+		<p class="main">
+		</p>
+<pre class="main">
+/**
+* Trim and remove multiple whitespaces from a string.
+* ---------------------------------------------------------------------
+* @return {String}
+* */
+</pre>
+		<h3 class="main">String.prototype.removeWhitespace</h3>
+		<strong class="main"><code class="main">String.prototype.removeWhitespace()</code></strong>
+		<p class="main">
+		</p>
+<pre class="main">
+/**
+* Remove whitespace characters from string.
+* ---------------------------------------------------------------------
+* @return {String}
+* */
+</pre>
+		<h3 class="main">String.prototype.removeLinebreaks</h3>
+		<strong class="main"><code class="main">String.prototype.removeLinebreaks()</code></strong>
+		<p class="main">
+		</p>
+<pre class="main">
+/**
+* Remove linebreak characters from string.
+* ---------------------------------------------------------------------
+* @return {String}
+* */
+</pre>
+		<h3 class="main">String.prototype.removeWhitespaceAndLinebreaks</h3>
+		<strong class="main"><code class="main">String.prototype.removeWhitespaceAndLinebreaks()</code></strong>
+		<p class="main">
+		</p>
+<pre class="main">
+/**
+* Remove whitespace and linebreak characters from string.
+* ---------------------------------------------------------------------
+* @return {String}
+* */
+</pre>
+		<h3 class="main">String.prototype.between</h3>
+		<strong class="main"><code class="main">String.prototype.between(start, end)</code></strong>
+		<p class="main">
+		</p>
+<pre class="main">
+/**
+* Returns a string between two strings. Checks for the first 
+* occurence of @param start an the next occurence of @param end
+* after this.
+* ---------------------------------------------------------------------
+* @param   {String} start
+* @param   {String} end
+* @return  {String}
+* */
+</pre>
+		<h3 class="main">String.prototype.chunk</h3>
+		<strong class="main"><code class="main">String.prototype.chunk(len)</code></strong>
+		<p class="main">
+		</p>
+<pre class="main">
+/**
+* Chunk a string in pieces of the specified length.
+* ---------------------------------------------------------------------
+* @param  {Integer}        length   (Max.) length of the chunks 
+* @return {Array&lt;String&gt;}
+* */
+</pre>
+		</div>
+		<div class="main" id="random">
+			<h2 class="main">cipherJS.random</h2>
+			<p class="main">
+				<code class="main">cipherJS.random</code> provides convenient
+				functions for cryptographically random numbers and strings
+				(<code class="main">Math.random</code> usually is not cryptographically
+				random).
+			</p>
+			<h3 class="main">cipherJS.random.randomNumber</h3>
+			<strong class="main"><code class="main">cipherJS.random.randomNumber()</code></strong>
+			<p class="main">
+			</p>
+<pre class="main">
+/**
+* Returns a usually large random integer.
+* ---------------------------------------------------------------------
+* @return {Integer}
+* */
+</pre>
+			<h3 class="main">cipherJS.random.mathRandom</h3>
+			<strong class="main"><code class="main">cipherJS.random.mathRandom()</code></strong>
+			<p class="main">
+			</p>
+<pre class="main">
+/**
+* Returns random values in the way Math.random does, just 
+* cryptographically secure.
+* ---------------------------------------------------------------------
+* @return {Float}
+* */
+</pre>
+			<h3 class="main">cipherJS.random.randomFloat</h3>
+			<strong class="main"><code class="main">cipherJS.random.randomFloat(min, max)</code></strong>
+			<p class="main">
+			</p>
+<pre class="main">
+/**
+* Returns a random float between min and max.
+* ---------------------------------------------------------------------
+* @return {Float}
+* */
+</pre>
+			<h3 class="main">cipherJS.random.randomInteger</h3>
+			<strong class="main"><code class="main">cipherJS.random.randomInteger(min, max)</code></strong>
+			<p class="main">
+			</p>
+<pre class="main">
+/**
+* Return an integer in a specific range. (Including min, excluding max,
+* so min=1 and max=4 will output possible results of 1, 2 or 3).
+* ---------------------------------------------------------------------
+* @return {Integer}
+* */
+</pre>
+			<h3 class="main">cipherJS.random.randomString</h3>
+			<strong class="main"><code class="main">cipherJS.random.randomString(len, enc)</code></strong>
+			<p class="main">
+			</p>
+<pre class="main">
+/**
+* Create a long random alphanumeric string. Good for hard to crack,
+* easy to use passphrases.
+* ---------------------------------------------------------------------
+* @param  {Integer}  len   Length of the random key string (chars)
+* @param  {String}   enc   (Optional) can be set to "hex" for a 
+*                          hex string.
+* @return {String}
+* */
+</pre>
+		</div>
+		<div class="main" id="enc">
+			<h2 class="main">cipherJS.enc</h2>
+			<p class="main">
+				cipherJS provides functions for encoding strings in 
+				UTF8, Base64 or hexadecimally. It also allows converting
+				strings to bits and bitarrays to strings.
+			</p>
+			<h3 class="main">cipherJS.enc.toHex</h3>
+			<strong class="main"><code class="main">cipherJS.enc.toHex(data, enc)</code></strong>
+			<p class="main">
+			</p>
+			<pre class="main">
+/**
+* Hex-encodes an Utf8- or Base64-String.
+* ---------------------------------------------------------------------
+* @param   {String}   data   Utf8- or Base64-String
+* @param   {String}   enc    "utf8" or "base64", current encoding 
+*                            of @data
+* @return  {String}          hex-encoded string
+* */
+			</pre>
+			<h3 class="main">cipherJS.enc.toBase64</h3>
+			<strong class="main"><code class="main">cipherJS.enc.toBase64(data, enc)</code></strong>
+			<p class="main">
+			</p>
+			<pre class="main">
+/**
+* Base64-encodes a Hex- or Utf8-String.
+* ---------------------------------------------------------------------
+* @param   {String}   data   Hex- or Utf8-String
+* @param   {String}   enc    "hex" or "utf8", current encoding 
+*                            of @data
+* @return  {String}          base64-encoded string
+* */
+			</pre>
+			<h3 class="main">cipherJS.enc.toUtf8</h3>
+			<strong class="main"><code class="main">cipherJS.enc.toUtf8(data, enc)</code></strong>
+			<p class="main">
+			</p>
+			<pre class="main">
+/**
+* Utf8-encodes a Hex- or Utf8-String.
+* ---------------------------------------------------------------------
+* @param   {String}   data   Hex- or Base64-String
+* @param   {String}   enc    "hex" or "base64", current encoding 
+*                            of @data
+* @return  {String}          utf8-encoded string
+* */
+			</pre>
+			<h3 class="main">cipherJS.enc.toBits</h3>
+			<strong class="main"><code class="main">cipherJS.enc.toBits(data, enc)</code></strong>
+			<p class="main">
+			</p>
+			<pre class="main">
+/**
+* Transforms a string of a given encoding to a bit array.
+* ---------------------------------------------------------------------
+* @param   {String}   data  Data string to encode
+* @param   {String}   enc   Current encoding of data ("utf8", "hex", "base64")
+* @return  {Array&lt;Integer&gt;}
+* */
+			</pre>
+			<h3 class="main">cipherJS.enc.fromBits</h3>
+			<strong class="main"><code class="main">cipherJS.enc.fromBits(data, enc)</code></strong>
+			<p class="main">
+			</p>
+			<pre class="main">
+/**
+* Transforms a bit array to a string of a certain encoding.
+* ---------------------------------------------------------------------
+* @param   {Array&lt;Integer&gt;}   data   bitArray to transform to a string
+* @param   {String}           enc    "utf8", "base64", "hex"
+* @return  {String}
+* */
+			</pre>
+		</div>
+		<div class="main" id="mask">
+			<h2 class="main">cipherJS.mask</h2>
+			<p class="main">
+				cipherJS' asymmetric encryption and signing functions 
+				expect masked cleartext, i.e. cleartext that does not contain
+				XML, JSON and - best - few or no special chars.<br>
+				Masking functions in cipherJS output masked text that is 
+				nothing but alphanumeric and '%' characters. Unmasking
+				recreates the actual text.
+			</p>
+			<p class="main">
+				You might find even this kind of masked text "screwed" after 
+				sending over the network, as some servers decode URI components 
+				automatically.<br>
+				There are two solutions to this:
+				<br>
+				a) Use <code class="main">encodeURIComponent</code> for masked text as well.
+				<br>
+				b) <code class="main">encodeURIComponent</code>, and replace all '%' by some
+				   other rather untroublesome specialchar like '*'.
+			</p>
+			<h3 class="main">cipherJS.mask.mask</h3>
+			<strong class="main"><code class="main">cipherJS.mask.mask(str)</code></strong>
+			<p class="main">
+			</p>
+			<pre class="main">
+/**
+* Mask a string so that after masking, it only contains alphanumeric
+* characters and %. 
+* ---------------------------------------------------------------------
+* To mask a string, it is base64-encoded and then encoded using 
+* encodeURIComponent. As a result, only alphanumeric and % are present
+* in the masked string, which will not give any trouble when transferred
+* over the network or passed to asymmetric encryption functions as 
+* a cleartext (they are not supposed to take XML or JSON cleartexts,
+* and users could any time include text or JSON data in their messages).
+* ---------------------------------------------------------------------
+* @param   {String}   str   String to mask
+* @return  {String}         Masked string
+* */
+			</pre>
+			<h3 class="main">cipherJS.mask.unmask</h3>
+			<strong class="main"><code class="main">cipherJS.mask.unmask(str)</code></strong>
+			<p class="main">
+			</p>
+			<pre class="main">
+/**
+* Unmask a string that was masked using cipherJS.mask.mask. 
+* ---------------------------------------------------------------------
+* @str is first decoded using decodeURIComponent, and then the 
+* resulting base64 string is utf8-encoded, resulting in the original
+* string.
+* ---------------------------------------------------------------------
+* @param   {String}   str   Masked text
+* @return  {String}         Original text, unmasked
+* */
+			</pre>
+		</div>
+		<div class="main" id="hash">
+			<h2 class="main">cipherJS.hash</h2>
+			<p class="main">
+				cipherJS provides hashing functions for strings. It 
+				has SHA1, SHA256 and SHA512 available. MD5 is not 
+				present and will not be.<br>
+				SHA1 is deprecated, use it for legacy purposes only.
+			</p>
+			<h3 class="main">cipherJS.hash.sha1</h3>
+			<strong class="main"><code class="main">cipherJS.hash.sha1(data, enc)</code></strong>
+			<p class="main">
+			</p>
+			<pre class="main">
+/**
+* SHA1-hash a given string and receive output in Hex, Base64 or as an
+* array.
+* ---------------------------------------------------------------------
+* @param   {String}   str   String to hash
+* @param   {String}   enc   Encoding of the hash, "hex", "base64" or "none".
+*                           Output will be a bit array (array of integer)
+*                           for "none", and a string for the other 
+*                           options.
+* @return {String | Array&lt;Integer&gt;}
+* */
+			</pre>
+			<h3 class="main">cipherJS.hash.sha256</h3>
+			<strong class="main"><code class="main">cipherJS.hash.sha256(data, enc)</code></strong>
+			<p class="main">
+			</p>
+			<pre class="main">
+/**
+* SHA256-hash a given string and receive output in Hex, Base64 or as an
+* array.
+* ---------------------------------------------------------------------
+* @param   {String}   str   String to hash
+* @param   {String}   enc   Encoding of the hash, "hex", "base64" or "none".
+*                           Output will be a bit array (array of integer)
+*                           for "none", and a string for the other 
+*                           options.
+* @return {String | Array&lt;Integer&gt;}
+* */
+			</pre>
+			<h3 class="main">cipherJS.hash.sha512</h3>
+			<strong class="main"><code class="main">cipherJS.hash.sha512(data, enc)</code></strong>
+			<p class="main">
+			</p>
+			<pre class="main">
+/**
+* SHA512-hash a given string and receive output in Hex, Base64 or as an
+* array.
+* ---------------------------------------------------------------------
+* @param   {String}   str   String to hash
+* @param   {String}   enc   Encoding of the hash, "hex", "base64" or "none".
+*                           Output will be a bit array (array of integer)
+*                           for "none", and a string for the other 
+*                           options.
+* @return {String | Array&lt;Integer&gt;}
+* */
+			</pre>
+		</div>
+		<div class="main" id="sym">
+			<h2 class="main">cipherJS.sym</h2>
+			<p class="main">
+				Symmetric encryption and decryption is pretty straightforward
+				in cipherJS: Pass
+				a data string and a password to a function, specify an 
+				algorithm if encrypting, and receive the result.
+				<br>
+				Output always is an UTF8-encoded string
+				(some JSON, no rare special characters). 
+			</p>
+			<p class="main">
+				cipherJS supports AES, Rijndael, Twofish,
+				Serpent and a combination of AES and Twofish. Default keysize
+				is 256 bit.
+			</p>
+			<h3 class="main">cipherJS.sym.encrypt</h3>
+			<strong class="main"><code class="main">cipherJS.sym.encrypt(data, pass, algorithm)</code></strong>
+			<p class="main">
+			</p>
+			<pre class="main">
+/**
+* Encrypt @data using @password. Use @algorithm as encryption algorithm.
+* ---------------------------------------------------------------------
+* @param   {String}   data         Data string to encrypt
+* @param   {String}   pass         Password to use for encryption
+* @param   {String}   algorithm    Algorithm to use for encryption.
+*                                  "aes", "rijndael", "twofish", "serpent",
+*                                  "aes-twofish" are possible.
+* @return  {String} 
+* */
+			</pre>
+			<h3 class="main">cipherJS.sym.decrypt</h3>
+			<strong class="main"><code class="main">cipherJS.sym.decrypt(data, pass)</code></strong>
+			<p class="main">
+			</p>
+			<pre class="main">
+/**
+* Decrypt a string that was encrypted using cipherJS.sym.encrypt, 
+* recognize encryption algorithm automatically.
+* ---------------------------------------------------------------------
+* @param   {String}   data   Ciphertext to decrypt
+* @param   {String}   pass   Password to use for decryption
+* @return  {String}
+* */
+			</pre>
+			<h3 class="main">cipherJS.sym.encryptAsync</h3>
+			<strong class="main"><code class="main">cipherJS.sym.encryptAsync(data, pass, algorithm, callback, carrier)</code></strong>
+			<p class="main">
+			</p>
+			<pre class="main">
+/**
+* Encrypt @data asynchronously using @pass. This makes sense for very
+* long @data strings.
+* Usually, symmetric encryption is best done synchronously, as 
+* encrypting strings even of a few thousand characters is pretty fast.
+* Asynchronous symmetrical encryption starts making sense when you 
+* encrypt very long strings, of for example 10 000 characters or more.
+* This is where asynchronous symmetrical encryption starts actually 
+* improving performance or prevent browsers from just breaking.
+* ---------------------------------------------------------------------
+* Split a string into chunks of up to 3000 characters and encrypt them
+* one at a time. Stringify the resulting array.
+* ---------------------------------------------------------------------
+* @param   {String}   data   
+* @param   {String}   pass
+* @param   {String}   algorithm   Algorithm to use for encryption.
+*                                 "aes", "rijndael", "twofish", "serpent",
+*                                 "aes-twofish" are possible.
+*                                 
+* @carries {Object}   carrier
+* @calls   {Function}             function(String enc, Object carrier)
+* */
+			</pre>
+			<h3 class="main">cipherJS.sym.decryptAsync</h3>
+			<strong class="main"><code class="main">cipherJS.sym.decryptAsync(data, pass, callback, carrier)</code></strong>
+			<p class="main">
+			</p>
+			<pre class="main">
+/**
+* Decrypt a string that was encrypted using cipherJS.sym.encryptAsync.
+* Recognizes algorithm automatically.
+* ---------------------------------------------------------------------
+* Convert @data to an array of strings up to 3000 characters long and
+* decrypt each of them. Join the resulting array to form the actual 
+* cleartext.
+* ---------------------------------------------------------------------
+* @param   {String}   data      Encrypted data to decrypt
+* @param   {String}   pass      Password to use for decryption
+* @carries {Object}   carrier  
+* @calls   {Function}           function(String dec, Object carrier)
+* */
+			</pre>
+			<h3 class="main">Settings</h3>
+			<p class="main">
+				By default, all algorithms work with 256 bit keys. cipherJS uses 
+				PBKDF2 (1000 iterations) to create strong encryption keys from
+				passwords.
+			</p>
+			<p class="main">
+				AES operates in OCB2 mode by default, which is known as maybe the 
+				best mode - performant and secure. <br>
+				The other algorithms work in the somewhat not so perfect CBC mode 
+				at the moment, sorry about that. CBC is not "bad", but doesn't
+				support <a href="https://en.wikipedia.org/wiki/Authenticated_encryption"
+				target="_blank">authenticated encryption</a>. cipherJS uses HMAC
+				(encrypt then MAC) in combination with CBC mode to make up for this rather 
+				vulnerable mode, so you should still be able to use Rijndael, Serpent and Twofish
+				in <code class="main">cipherJS.sym</code> safely.
+			</p>
+			<p class="main">
+				You might change the settings listed below, but please be aware of
+				the fact the defaults are pretty sensible and well-tested. 
+				Do not change them if not absolutely necessary.
+			</p>
+			<h4 class="main">String cipherJS.sym.aesMode</h4>
+			<pre class="main">
+/**
+* "ocb2", "ccm", "cbc" and "gcm" are available. CCM is most widely used, but
+* OCB is often referred to as the best mode. It can now be used in 
+* non-military software freely and definetely used freely in open source
+* software. DEFAULT: "ocb2".
+* */
+			</pre>
+			<h4 class="main">Integer cipherJS.sym.aesIter</h4>
+			<pre class="main">
+/**
+* Keys are derived from passwords and improved using PBKDF2. SJCL uses
+* a cached PBKDF2, which is so fast you barely notice 1000 iterations
+* and can probably go to 2000 without a problem. 1000 is really fast
+* and the recommended minimum. DEFAULT: 1000.
+* */
+			</pre>
+			<h4 class="main">Integer cipherJS.sym.aesKeysize</h4>
+			<pre class="main">
+/**
+* 128, 192 and 256 are possible. 256 is extremely performant, so just
+* always use this. Default: 256.
+* */
+			</pre>
+			<h4 class="main">Integer cipherJS.sym.aesAuthStrength</h4>
+			<pre class="main">
+/**
+* Strength of authentication tags which make sure encrypted messages
+* aren't changed. 64, 96 and 128 are possible. Default: 128.
+* */
+			</pre>
+			<h4 class="main">Integer cipherJS.sym.rijndaelKeysize</h4>
+			<pre class="main">
+/**
+* Keysize for Rijndael encryption. 256 is default and recommended.
+* */
+			</pre>
+			<h4 class="main">Integer cipherJS.sym.rijndaelIter</h4>
+			<pre class="main">
+/**
+* Keys are derived from passwords and improved using PBKDF2. SJCL uses
+* a cached PBKDF2, which is so fast you barely notice 1000 iterations
+* and can probably go to 2000 without a problem. 1000 is really fast
+* and the recommended minimum. DEFAULT: 1000.
+* */
+			</pre>
+			<h4 class="main">Integer cipherJS.sym.twofishKeysize</h4>
+			<pre class="main">
+/**
+* Keysize for Twofish encryption. 256 is default and recommended.
+* */
+			</pre>
+			<h4 class="main">Integer cipherJS.sym.twofishIter</h4>
+			<pre class="main">
+/**
+* Keys are derived from passwords and improved using PBKDF2. SJCL uses
+* a cached PBKDF2, which is so fast you barely notice 1000 iterations
+* and can probably go to 2000 without a problem. 1000 is really fast
+* and the recommended minimum. DEFAULT: 1000.
+* */
+			</pre>
+			<h4 class="main">Integer cipherJS.sym.serpentKeysize</h4>
+			<pre class="main">
+/**
+* Keysize for Serpent encryption. 256 is default and recommended.
+* */
+			</pre>
+			<h4 class="main">Integer cipherJS.sym.serpentIter</h4>
+			<pre class="main">
+/**
+* Keys are derived from passwords and improved using PBKDF2. SJCL uses
+* a cached PBKDF2, which is so fast you barely notice 1000 iterations
+* and can probably go to 2000 without a problem. 1000 is really fast
+* and the recommended minimum. DEFAULT: 1000.
+* */
+			</pre>
+		</div>
+		<div class="main" id="asymsimple">
+			<h2 class="main">cipherJS.asym.simple</h2>
+			<p class="main">
+				cipherJS provides asymmetric (public key) cryptography
+				in a way similar to what you may know from PGP or SSL/TLS with
+				<code class="main">cipherJS.asym.simple</code>. Working
+				with XML-based message- and keyblocks, <code class="main">cipherJS.asym.simple</code>
+				uses the lower level functions in <code class="main">cipherJS.asym</code>.
+			</p>
+			<p class="main">
+				If you haven't known and used public key cryptography before,
+				research it, for example on <a href="https://en.wikipedia.org/wiki/Asymmetric_encryption" target="_blank">
+				Wikipedia</a>, and read more about public key cryptography systems like PGP and SSL. <br>
+				This documentation cannot explain public key cryptography, but there's 
+				enough material available.
+			</p>
+			<p class="main">
+				cipherJS public key cryptography works based on the performant ECC algorithm, 
+				which provides pretty high security working with comparably small keys:
+				An ECC keypair with a public key size of 512 bit can provide about the same
+				level of security in encryption or signing an RSA keypair with a public key size 
+				of 15360 (!) bit can provide.<br>
+				ECC, however, needs an additional 
+				symmetric algorithm for message encryption. 
+				This by default is a combination of AES and Twofish, 
+				but AES, Twofish,
+				Rijndael and Serpent are available (AES is based on Rijndael, both are included here).
+			</p>
+			<p class="main">
+				In <code class="main">cipherJS.asym.simple</code>, you'll receive not private 
+				and public key, but a "full keyset" and a "public keyset". <br>
+				Treat the "full keyset" like you would treat a private key, and the "public keyset"
+				like you would treat a public key.<br>
+				The idea to have keysets comes from the situation that it is best to have two
+				keypairs for each user - one for encryption, one for signing - in ECC, and that
+			    some cipherJS functions which would normally only need a users secret key use the
+			    public key as well (to verify the function output is valid and not broken due to
+			    some browser issue etc.). <br> So the full keyset packs all 4 keys a user has (public 
+			    encryption key, private encryption key, public signing key, private signing key) and
+			    the public keyset only packs the two public keys.
+			</p>
+			<p class="main">
+				If you want to learn more about the technical details behind the public key
+				cryptography in cipherJS, read the documentation for <code class="main">cipherJS.asym</code>. 
+				Refer to the
+				source for more detail.
+			</p>
+			<p class="main" style="padding: 2%; border: 1px dashed black;">
+				Please note that cipherJS' asymmetric functions for encryption and signing expect
+				<strong class="main">masked</strong> input. Mask before encryption, unmask after 
+				decryption. You can use <code class="main">cipherJS.mask</code> or write your own
+				masker, but don't pass XML, JSON or whatever contains similar tags and characters.
+			</p>
+			<h3 class="main">cipherJS.asym.simple.generateKeyset</h3>
+			<strong class="main"><code class="main">cipherJS.asym.simple.generateKeyset(curve, pass, callback, carrier)</code></strong>
+			<p class="main">
+			</p>
+			<pre class="main">
+/**
+* Generate a full keyset and a public keyset for a user. In ECC, it is
+* more secure to have two keypairs - one only for signing, and one only
+* for encryption - per user. cipherJS generates two keypairs, and packs
+* all the keys (private and public for each keypair) in the full keyset,
+* and the two public keys only in the public keyset.
+* Treat the full keyset like a "private key" (as you know it from for
+* example PGP) and the public keyset like a "public key". 
+* Private keys are strongly symmetrically encrypted using @pass, however,
+* you should still be careful if storing them on servers. It is most 
+* safe never to publish a private key, and this is true for cipherJS'
+* full keysets as well.
+* Instead of a keysize (like 256 bit, or 512 bit or such) you can specify
+* a curvename here. This is because all ECC keys in fact represent points
+* on an elliptic curve. There are standards for these curves. For example,
+* the curve named "brainpoolP512r" represents a curve defined by the 
+* brainpool standard, with a bitlength of 512 bit (this means: the 
+* coordinates x and y which specify a point on the curve are 512 bit 
+* numbers - extremely large integer numbers). 
+* cipherJS at the moment only supports the brainpool standard, as several
+* other standards have been criticized pretty often and cipherJS will 
+* only use them when rumors about "cooked parameters" (there are "weak"
+* curves, where there is a mathematical trick to find out private keys from
+* public keys) are *proven* wrong.
+* ---------------------------------------------------------------------
+* @param   {String}   curve      Name of the curve the keys will be on.
+*                                The number (160, 192, 224, 256, 320,
+*                                384, 512) is the bitlength.
+*                                Available:
+*                                "brainpoolP160r1"
+*                                "brainpoolP192r1"
+*                                "brainpoolP224r1"
+*                                "brainpoolP256r1"
+*                                "brainpoolP320r1"
+*                                "brainpoolP384r1"
+*                                "brainpoolP512r1"
+*                                ECC keys provide higher security at 
+*                                small keylength compared to RSA. Here's
+*                                a comparison of the estimated security
+*                                by key size:
+*                                ECC   |   RSA   |   AES (symmetric, for comparison)
+*                                160      1024        -
+*                                192      1536        -
+*                                224      2048        -
+*                                256      3072        128
+*                                320      4096        -
+*                                384      7680        192
+*                                512      15360       256
+*                                As ECC is extremely performant, you should be able
+*                                to choose at least 256 bit keys. 512 is best and 
+*                                a reasonable default for most applications.
+* @param   {String}   pass       Password to encrypt the private keys with
+* @carries {Object}   carrier
+* @calls   {Function} callback   function(String full_keyset, String public_keyset, Object carrier)
+* */
+			</pre>
+			<h3 class="main">cipherJS.asym.simple.printId</h3>
+			<strong class="main"><code class="main">cipherJS.asym.simple.printId(keyset)</code></strong>
+			<p class="main">
+			</p>
+			<pre class="main">
+/**
+* This function takes a keyset (full or public) and generates its
+* ID. 
+* ---------------------------------------------------------------------
+* A keysets' ID, the SHA256-hash of the signing and encryption public 
+* key, can be used to check in a more human readable form if a keyset
+* has changed. If the ID stays the same, the keys are the same (very,
+* very, very likely - at least).
+* ---------------------------------------------------------------------
+* @param   {String}   keyset   XML string, representing a keyset (full
+*                              or public)
+* @return  {String}   id       Hex string, representing the ID of the
+*                              keyset.
+* */
+			</pre>
+			<h3 class="main">cipherJS.asym.simple.encryptMessage</h3>
+			<strong class="main"><code class="main">cipherJS.asym.simple.encryptMessage(recv_keysets, cleartext, callback, carrier)</code></strong>
+			<p class="main">
+			</p>
+			<pre class="main">
+/**
+* Encrypt a message using the receivers' public keyset.
+* ---------------------------------------------------------------------
+* @param   {Array&lt;String&gt;}   recv_keysets   Array of receiver keysets
+* @param   {String}          cleartext      Cleartext to encrypt
+* @param   {String}          symkey         Optional symmetric key, so the
+*                                           receivers can still decrypt
+*                                           using their private key, but 
+*                                           whoever already knows the @symkey
+*                                           can decrypt calling
+*                                           cipherJS.asym.symDecryptAsync(msg.between("&lt;content&gt;", "&lt;/content&gt;"), symkey, callback, carrier)
+*                                           Just don't provide it if all
+*                                           receivers will decrypt with their
+*                                           private keys, it is not necessary then.
+* @carries {Object}          carrier
+* @calls   {Function}        callback       function(String message, Object carrier)
+* */
+			</pre>
+			<h3 class="main">cipherJS.asym.simple.decryptMessage</h3>
+			<strong class="main"><code class="main">cipherJS.asym.simple.decryptMessage(msg, recv_keyset, pass, callback, carrier)</code></strong>
+			<p class="main">
+			</p>
+			<pre class="main">
+/**
+* Decrypt a message using the receiver's full keyset.
+* ---------------------------------------------------------------------
+* @param   {String}   msg           Message to decrypt
+* @param   {String}   recv_keyset   Receiver's full keyset
+* @param   {String}   pass          Password for @recv_keyset
+* @carries {Object}   carrier
+* @calls   {Function} callback      function(String cleartext, Object carrier)
+* */
+			</pre>
+			<h3 class="main">cipherJS.asym.simple.signMessage</h3>
+			<strong class="main"><code class="main">cipherJS.asym.simple.signMessage(sender_keyset, pass, cleartext, callback, carrier)</code></strong>
+			<p class="main">
+			</p>
+			<pre class="main">
+/**
+* Sign a message using the sender's full keyset. 
+* ---------------------------------------------------------------------
+* @param   {String}   sender_keyset   Sender's full keyset
+* @param   {String}   pass            Password for @sender_keyset
+* @param   {String}   cleartext       Message text to sign
+* @carries {Object}   carrier
+* @calls   {Function} callback        function(String signed_message, Object carrier)
+* */
+			</pre>
+			<h3 class="main">cipherJS.asym.simple.verifyMessage</h3>
+			<strong class="main"><code class="main">cipherJS.asym.simple.verifyMessage(sender_keyset, msg, callback, carrier)</code></strong>
+			<p class="main">
+			</p>
+			<pre class="main">
+/**
+* Verify a message using the sender's public keyset. Note: You get the
+* cleartext itself by calling 
+* msg.between('&lt;content&gt;', '&lt;/content&gt;');
+* ---------------------------------------------------------------------
+* @param   {String}   sender_keyset   Sender's public keyset
+* @param   {String}   msg             Signed message
+* @carries {Object}   carrier
+* @calls   {Function} callback        function(Boolean verified, Object carrier)
+* */
+			</pre>
+			<h3 class="main">cipherJS.asym.simple.encryptAndSignMessage</h3>
+			<strong class="main"><code class="main">cipherJS.asym.simple.encryptAndSignMessage(recv_keysets, sender_keyset, pass, cleartext, callback, carrier)</code></strong>
+			<p class="main">
+			</p>
+			<pre class="main">
+/**
+* Encrypt a message using the receivers' public keyset. Sign with the
+* sender's full keyset.
+* ---------------------------------------------------------------------
+* @param   {Array&lt;String&gt;}   recv_keysets    Array of receiver keysets
+* @param   {String}          sender_keyset   Sender's full keyset
+* @param   {String}          pass            Password for @sender_keyset
+* @param   {String}          cleartext       Cleartext to encrypt
+* @param   {String}          symkey          Optional symmetric key, so the
+*                                            receivers can still decrypt
+*                                            using their private key, but 
+*                                            whoever already knows the @symkey
+*                                            can decrypt calling
+*                                            cipherJS.asym.symDecryptAsync(msg.between("&lt;content&gt;", "&lt;/content&gt;"), symkey, callback, carrier)
+*                                            Just don't provide it if all
+*                                            receivers will decrypt with their
+*                                            private keys, it is not necessary then.
+* @carries {Object}          carrier
+* @calls   {Function}        callback        function(String message, Object carrier)
+* */
+			</pre>
+			<h3 class="main">cipherJS.asym.simple.decryptAndVerifyMessage</h3>
+			<strong class="main"><code class="main">cipherJS.asym.simple.decryptAndVerifyMessage(msg, recv_keyset, pass, sender_keyset, callback, carrier)</code></strong>
+			<p class="main">
+			</p>
+			<pre class="main">
+/**
+* Decrypt a message using the receiver's full keyset. Verify using the
+* sender's public keyset.
+* ---------------------------------------------------------------------
+* @param   {String}   msg             Message to decrypt
+* @param   {String}   recv_keyset     Receiver's full keyset
+* @param   {String}   pass            Password for @recv_keyset
+* @param   {String}   sender_keyset   Sender's full keyset
+* @carries {Object}   carrier
+* @calls   {Function} callback        function(String cleartext, Object carrier)
+* */
+			</pre>
+			<h3 class="main">Settings</h3>
+			<p class="main">
+				Concerning settings, you might want to set 
+				<code class="main">cipherJS.asym.symmetricAlgorithm</code> (a string
+				value).<br>
+				"aes", "rijndael", "twofish", "serpent", "aes-twofish" are currently
+				supported.<br>
+				The default is "aes-twofish" and usually, there's no reason to change this.
+				When decrypting or verifying messages that were encrypted using a different
+				symmetric algorithm than you set, there should be no problem as well, as
+				the encryption algorithm is recognized automatically.<br>
+				Only change the default if there is a sensible reason to do so.
+			</p>
+			<p class="main">
+				<code class="main">cipherJS.asym</code> uses the functions 
+				from <code class="main">cipherJS.sym</code>,
+				so settings defined in <code class="main">cipherJS.sym</code> are used - keysizes,
+				PBKDF2 iterations or block modes are defined there. If you change settings in
+				<code class="main">cipherJS.sym</code>, it affects <code class="main">cipherJS.asym</code>.
+			</p>
+		</div>
+		<div class="main" id="asym">
+			<h2 class="main">cipherJS.asym</h2>
+			<p class="main">
+				<code class="main">cipherJS.asym</code> provides asymmetric
+				encryption in cipherJS. You might want to use <code class="main">cipherJS.asym.simple</code> 
+				in most cases. Use <code class="main">cipherJS.asym</code> only
+				if you want to define your own system of message blocks and key blocks
+				or none at all.
+			</p>
+			<p class="main">
+				"<strong class="main">Symmetric encryption</strong>" in 
+				<code class="main">cipherJS.asym</code> always refers to 
+				using <code class="main">cipherJS.sym</code> with the algorithm
+				defined in <code class="main">cipherJS.asym.symmetricAlgorithm</code>,
+				default is "aes-twofish". <br>
+				Messages are encrypted and decrypted asynchronously, while all other 
+				ciphertexts (secret keys, symmetric keys...) are encrypted 
+				synchronously.
+			</p>
+			<h3 class="main">cipherJS.asym.generateKeys</h3>
+			<strong class="main"><code class="main">cipherJS.asym.generateKeys(curve, pass, callback, carrier)</code></strong>
+			<p class="main">
+			</p>
+			<pre class="main">
+/**
+* Generate a set of keys for encryption and signing. You'll receive a 
+* full keyset (treat it like you treat a PGP private key) and a public
+* keyset (treat it like you treat a PGP public key).
+* ---------------------------------------------------------------------
+* ECC works somewhat different compared to RSA. It is best, most secure,
+* not to have one keypair (2 keys) but two keypairs (4 keys) for a user.
+* One keypair is used exclusively for encryption purposes (i.e. for
+* key agreement via elGamal), while the other one will only be used for
+* signing purposes (ECDSA).
+* cipherJS generates the two keypairs on a certain curve, and 
+* encrypts each of the two private keys symmetrically using @pass. All
+* keys are serialized. This makes them pretty portable.
+* Key generation does happen asynchronously, so it should not hit
+* browser limits.
+* ---------------------------------------------------------------------
+* @param   {String}    curve       Elliptic curve the points representing
+*                                  the keys will be on.
+*                                  There are several standards for ECC
+*                                  parameters. One of the most strict and
+*                                  secure is the brainpool standard. If you
+*                                  are not sure what to use, choose 
+*                                  "brainpoolP256r1", "brainpoolP512r1"
+*                                  or one between the two (320 or 384). 
+*                                  At the moment, cipherJS only supports the
+*                                  brainpool standard, as there are a lot
+*                                  of rumors about several other standards.
+*                                  If rumors about "cooked" parameters and
+*                                  such should prove wrong, cipherJS will
+*                                  add some more curve parameters.
+*                                  At the moment you can choose from the
+*                                  following:
+*                                  "brainpoolP160r1"
+*                                  "brainpoolP192r1"
+*                                  "brainpoolP224r1"
+*                                  "brainpoolP256r1"
+*                                  "brainpoolP320r1"
+*                                  "brainpoolP384r1"
+*                                  "brainpoolP512r1"
+*  
+*                                  A small comparison of the security level
+*                                  ECC and RSA keys of a certain bitlength
+*                                  are assumed to provide may show you which
+*                                  curve is the right one for your purposes.
+*                                  
+*                                  Security Level / Bitlength
+*                                    ECC     |  RSA     | AES (symmetric)
+*                                  --------------------------------------
+*                                    160        1024       -
+*                                    192        1536       -
+*                                    224        2048       -
+*                                    256        3072       128
+*                                    320        4096       -
+*                                    384        7680       192
+*                                    512        15360      256
+*                                
+*                                 Working with ECC keys with a 512 bit keysize
+*                                 is still extremely performant. Choose this
+*                                 if possible, and 256, 320 or 384 if encryption
+*                                 needs to be super fast or work on more-than-just-
+*                                 weak devices.
+*                                
+* 
+* @param   {String}    pass       Password to symmetrically encrypt secret
+*                                 key strings with.
+* 
+* @carries {Object}    carrier    
+* 
+* @calls   {Function}  callback   function(Object full, Object public, Object carrier)
+*                                          full  :   Object encryption 
+*                                                       encryption:   String pub
+*                                                                     String priv
+*                                                    Object signing
+*                                                       signing:      String pub
+*                                                                     String priv
+*                                          public:   Object encryption
+*                                                                     String pub
+*                                                    Object signing   
+*                                                                     String pub
+* */
+			</pre>
+			<h3 class="main">cipherJS.asym.encryptString</h3>
+			<strong class="main"><code class="main">cipherJS.asym.encryptString(public_keys, cleartext, callback, carrier)</code></strong>
+			<p class="main">
+			</p>
+			<pre class="main">
+/**
+* Encrypt a cleartext using the receivers' public keys. 
+* ---------------------------------------------------------------------
+* For each public key, a symmetric key is derived which can only be 
+* recovered using the corresponding private key, i.e. using the 
+* receiver's private key.
+* A random key is created, and the cleartext is symmetrically encrypted
+* using it.
+* The random key is encrypted with each of the public keys, and each of
+* these encrypted keys will be appended to the message.
+* A receiver now can now recover their symmetric key using their private
+* key, decrypt their encrypted version of the random key and use this
+* to decrypt the encrypted text.
+* That way, only the owner of corresponding private keys to one of the
+* public keys will be able to read the message.
+* cipherJS uses elGamal for derivation of private keys, adapting SJCL's
+* implementation.
+* ---------------------------------------------------------------------
+* @param   {Array&lt;Object&gt;}   public_keys   Array of public key objects
+* @param   {String}          cleartext     Cleartext to encrypt
+* @param   {String}          symkey        Optional symmetric key, so the
+*                                          receivers can still decrypt
+*                                          using their private key, but 
+*                                          whoever already knows the @symkey
+*                                          can decrypt calling
+*                                          cipherJS.asym.symDecryptAsync(msg.between("&lt;content&gt;", "&lt;/content&gt;"), symkey, callback, carrier)
+*                                          Just don't provide it if all
+*                                          receivers will decrypt with their
+*                                          private keys, it is not necessary then.
+* @carries {Object}          carrier
+* @calls   {Function}        callback      function(Object enc, Object carrier)
+*                                              enc:
+*                                                 Array enckeys
+*                                                    Object enckey:
+*                                                       String enckey  (encrypted random key)
+*                                                       String keytag  (tag needed to recover 
+*                                                                       the symmetric key
+*                                                                       using the private key)
+*                                                       String keyhash (hash of the public key,
+*                                                                       so the owner of the 
+*                                                                       private key can more easily
+*                                                                       find out which enckey is
+*                                                                       "theirs")
+*                                                  String ciphertext
+* */
+			</pre>
+			<h3 class="main">cipherJS.asym.decryptString</h3>
+			<strong class="main"><code class="main">cipherJS.asym.decryptString(msg, recv_keyset, pass, callback, carrier)</code></strong>
+			<p class="main">
+			</p>
+			<pre class="main">
+/**
+* Decrypt a message using the receiver's (full) keyset.
+* ---------------------------------------------------------------------
+* The receivers public encryption key is hashed and it is checked which
+* object in msg.enckeys contains the cipherkey to decrypt. Using the
+* keytag and the receiver's private key, the symmetric key is recovered
+* and the encrypted key is decrypted. This decrypted symmetric key is
+* used to decrypt the ciphertext.
+* ---------------------------------------------------------------------
+* @param   {Object}   msg           Message object such as found in the
+*                                   output of cipherJS.asym.encryptString.
+* @param   {Object}   recv_keyset   Receiver's full keyset
+* @param   {String}   pass          Password for @recv_keyset
+* @carries {Object}   carrier
+* @calls   {Function} callback      function(String cleartext, Object carrier)
+*                                     (cleartext will be null if the message
+*                                      was not adressed to the owner of 
+*                                      @recv_keyset, or if you passed a wrong
+*                                      @pass)
+* */
+			</pre>
+			<h3 class="main">cipherJS.asym.signString</h3>
+			<strong class="main"><code class="main">cipherJS.asym.signString(sender_keyset, pass, cleartext, callback, carrier)</code></strong>
+			<p class="main">
+			</p>
+			<pre class="main">
+/**
+* Sign a cleartext message with using the senders full keyset. 
+* ---------------------------------------------------------------------
+* Using ECDSA, a signature unique to the cleartext and the senders 
+* private signing key will be created. This signature can be verified 
+* with the corresponding public signing key.
+* ---------------------------------------------------------------------
+* @param   {Object}   sender_keyset   Sender's full keyset
+* @param   {String}   pass            Password for @sender_keyset
+* @param   {String}   cleartext       Cleartext to sign
+* @carries {Object}   carrier
+* @calls   {Function} callback        function(Object signed, Object carrier)
+*                                        signed:
+*                                           String signature
+*                                           String cleartext
+* */
+			</pre>
+			<h3 class="main">cipherJS.asym.verifySignature</h3>
+			<strong class="main"><code class="main">cipherJS.asym.verifySignature(sender_keyset, cleartext, signature, callback, carrier)</code></strong>
+			<p class="main">
+			</p>
+			<pre class="main">
+/**
+* Verify a signature for a cleartext using the sender's public keyset.
+* ---------------------------------------------------------------------
+* A hash of the cleartext is used to verify whether the signature 
+* actually was created with the private signing key corresponding to the
+* public signing key present in the sender's public keyset.
+* ---------------------------------------------------------------------
+* @param   {Object}   sender_keyset   Sender's public keyset
+* @param   {String}   cleartext       Cleartext @signature was created with
+* @param   {String}   signature       Signature to verify
+* @carries {Object}   carrier
+* @calls   {Function} callback        function(Boolean verified, Object carrier)
+* */
+			</pre>
+			<h3 class="main">cipherJS.asym.encryptAndSignString</h3>
+			<strong class="main"><code class="main">cipherJS.asym.encryptAndSignString(recv_keysets, sender_keyset, pass, cleartext, callback, carrier)</code></strong>
+			<p class="main">
+			</p>
+			<pre class="main">
+/**
+* Encrypt a string using the receivers' public keysets, and sign it 
+* using the sender' full keysets.
+* ---------------------------------------------------------------------
+* The message is first signed using cipherJS.asym.signString and then
+* encrypted using cipherJS.asym.encryptString.
+* ---------------------------------------------------------------------
+* @param   {Array&lt;Object&gt;}   recv_keysets   Receivers' public keysets
+* @param   {String}          sender_keyset  Sender's full keyset
+* @param   {String}          pass           Password for @sender_keyset
+* @param   {String}          symkey         Optional symmetric key, so the
+*                                           receivers can still decrypt
+*                                           using their private key, but 
+*                                           whoever already knows the @symkey
+*                                           can decrypt calling
+*                                           cipherJS.asym.symDecryptAsync(msg.between("&lt;content&gt;", "&lt;/content&gt;"), symkey, callback, carrier)
+*                                           Just don't provide it if all
+*                                           receivers will decrypt with their
+*                                           private keys, it is not necessary then.
+* @carries {Object}          carrier
+* @calls   {Function}        callback       function(Object enc, Object carrier)
+*                                              enc:
+*                                                 Array enckeys
+*                                                    Object enckey:
+*                                                       String enckey  (encrypted random key)
+*                                                       String keytag  (tag needed to recover 
+*                                                                       the symmetric key
+*                                                                       using the private key)
+*                                                       String keyhash (hash of the public key,
+*                                                                       so the owner of the 
+*                                                                       private key can more easily
+*                                                                       find out which enckey is
+*                                                                       "theirs")
+*                                                  String ciphertext
+*                                                  String signature
+* */
+			</pre>
+			<h3 class="main">cipherJS.asym.decryptAndVerify</h3>
+			<strong class="main"><code class="main">cipherJS.asym.decryptAndVerify(enc, recv_keyset, pass, sender_keyset, callback, carrier)</code></strong>
+			<p class="main">
+			</p>
+			<pre class="main">
+/**
+* Decrypt a message using the receiver's full keyset and the sender's
+* public keyset.
+* ---------------------------------------------------------------------
+* First the message is decrypted using cipherJS.asym.decryptString, 
+* and then verified using cipherJS.asym.verifySignature.
+* ---------------------------------------------------------------------
+* @param   {Object}   enc             Encrypted and signed message object
+* @param   {Object}   recv_keyset     Receiver's full keyset
+* @param   {String}   pass            Pass for @recv_keyset
+* @param   {Object}   sender_keyset   Sender's full keyset
+* @carries {Object}   carrier
+* @calls   {Function} callback        function(Object dec, Object carrier)
+*                                        dec:
+*                                           String  cleartext
+*                                           Boolean verified
+* */			
+ </pre>
+			<h3 class="main">cipherJS.asym.symmetricAlgorithm</h3>
+			<strong class="main"><code class="main">String cipherJS.asym.symmetricAlgorithm</code></strong>
+			<p class="main">
+			</p>
+			<pre class="main">
+/**
+* The symmetric algorithm setting defines the symmetric algorithm to be
+* used by symEncrypt in this application. This is an application wide
+* setting.
+* "aes", "rijndael", "twofish", "serpent", "aes-twofish" are currently
+* supported. They'll use the settings of cipherJS.sym, i.e. if you
+* specify 256 bit keysize there it will be that, and if you specify
+* only 128 bit keysize, that'll be that as well.
+* cipherJS.asym.symDecrypt can decrypt data encrypted using
+* cipherJS.asym.symEncrypt using another setting for @symmetricAlgorithm,
+* as it recognized the algorithm automatically.
+* DEFAULT: "aes-twofish".
+* */
+			</pre>
+		</div>
+		<h1 class="main" id="async">Asynchronous Javascript</h1>
+		<div class="main" id="async_general">
+			<p class="main">
+				Javascript does not have a thing such as <code class="main">
+				Thread.sleep</code> in other languages.<br>
+				Still, Javascript functions cannot run endlessly, they hit browser
+				limits pretty soon or freeze browsers.
+			</p>
+			<p class="main">
+				To avoid hitting browser limits or freezing, functions can be
+				called asynchronously using <code class="main">setTimeout</code>.
+			</p>
+			<p class="main">
+				For example, if
+				<code class="main"><br>
+					function a(){<br>
+						&nbsp;&nbsp;&nbsp; b(); //some other function<br>
+						&nbsp;&nbsp;&nbsp; c(); //some other function<br>
+						&nbsp;&nbsp;&nbsp; d(); //some other function<br>
+						&nbsp;&nbsp;&nbsp; return e; //some return value<br>
+					}<br><br>
+				</code>
+				is a long running function, the three functions in function a
+				could be called asynchronously like that:
+				<br>
+				<code class="main"><br>
+					a();<br>
+					function a(){<br>
+					    &nbsp;&nbsp;&nbsp; var callback = aCallbackFunction;<br>
+						&nbsp;&nbsp;&nbsp; setTimeout(function(){b(callback);}, 10);<br>
+					}<br>
+					function b(callback){<br>
+						&nbsp;&nbsp;&nbsp; // do some stuff<br>
+						&nbsp;&nbsp;&nbsp; setTimeout(function(){c(callback);}, 10);<br>
+					}<br>
+					function c(callback){<br>
+						&nbsp;&nbsp;&nbsp; // do some stuff<br>
+						&nbsp;&nbsp;&nbsp; setTimeout(function(){d(callback);}, 10);<br>
+					}
+					function d(callback){<br>
+						&nbsp;&nbsp;&nbsp; // do some stuff<br>
+						&nbsp;&nbsp;&nbsp; var e = "whatever ;)"; <br>
+						&nbsp;&nbsp;&nbsp; callback(e); //callback instead of return value<br> 
+					}<br>
+					function aCallbackFunction(e){<br>
+						&nbsp;&nbsp;&nbsp; // do some stuff with e<br>
+					}<br>
+				</code>
+			</p>
+			<p class="main">
+				Instead of returning a value, a callback function is called with the
+				return value as a parameter. Of course, such a function must
+				exist.
+			</p>
+			<p class="main">
+				Passing callbacks as parameters allows calling an asynchronous
+				function from different contexts.
+			</p>
+			<p class="main">
+				Another problem is carrying variables. If you have a variable 
+				<code class="main">var x = "abcdefg"</code> in function 
+				<code class="main">a</code> before
+				calling function <code class="main">b</code> asynchronously, 
+				in the final callback function, there will be no <code class="main">x</code>
+				like defined in <code class="main">a</code> in 
+				<code class="main">callback</code>.
+			</p>
+			<p class="main">
+				The problem of carrying variable values by passing them to each function
+				called asynchronously and finally to the last callback can be solved by
+				a carrier parameter that is passed on like the callback parameter.
+			</p>
+			<p class="main">
+				A carrier parameter allows defining local variables in a function, storing
+				them in an Object, passing that for the carrier param and then receiving it
+				in the final callback then.
+			</p>
+			<p class="main">
+				In the following example, two values will be passed:
+			</p>
+			<p class="main">
+				<code class="main"><br>
+					a();<br>
+					function a(){<br>
+					    &nbsp;&nbsp;&nbsp; var x = "abcdefg"; <br>
+					    &nbsp;&nbsp;&nbsp; var y = "1234567"; <br>
+					    &nbsp;&nbsp;&nbsp; var carrier = {"x": x, "y": y};
+					    &nbsp;&nbsp;&nbsp; var callback = aCallbackFunction;<br>
+						&nbsp;&nbsp;&nbsp; setTimeout(function(){b(callback, carrier);}, 10);<br>
+					}<br>
+					function b(callback, carrier){<br>
+						&nbsp;&nbsp;&nbsp; // do some stuff<br>
+						&nbsp;&nbsp;&nbsp; setTimeout(function(){c(callback, carrier);}, 10);<br>
+					}<br>
+					function c(callback, carrier){<br>
+						&nbsp;&nbsp;&nbsp; // do some stuff<br>
+						&nbsp;&nbsp;&nbsp; setTimeout(function(){d(callback, carrier);}, 10);<br>
+					}
+					function d(callback, carrier){<br>
+						&nbsp;&nbsp;&nbsp; // do some stuff<br>
+						&nbsp;&nbsp;&nbsp; var e = "whatever ;)"; <br>
+						&nbsp;&nbsp;&nbsp; callback(e, carrier); //callback instead of return value<br> 
+					}<br>
+					function aCallbackFunction(e, carrier){<br>
+						&nbsp;&nbsp;&nbsp; // do some stuff with e<br>
+						&nbsp;&nbsp;&nbsp; // do some stuff with carrier <br>
+					}<br>
+				</code>
+			</p>
+			<p class="main">
+				Passing callbacks and carriers allows a very flexible way of calling 
+				Javascript functions asynchronously. 
+			</p>
+		</div>
+		<div class="main" id="async_cipherjs">
+			<h2 class="main">Asynchronous Javascript in cipherJS</h2>
+			<p class="main">
+				Asynchronous Javascript in cipherJS uses the approach of callbacks and
+				carriers like described above. 
+			</p>
+			<p class="main">
+				In the API docs, you'll find @return values for synchronous functions,
+				and @carries as well as @calls (with a description what parameters the 
+				callback function needs) for asynchronous functions.
+			</p>
+			<p class="main">
+				An example with <code class="main">cipherJS.asym.simple.generateKeyset</code>:
+			</p>
+<pre class="main">
+function take_keys(keys, carrier){
+	// when cipherJS.asym.simple.generateKeyset is done,
+	// this function will be called.
+	// carrier in this case will be "testcarrier"
+	// keys will be the keysets object.
+}
+cipherJS.asym.simple.generateKeyset(521, "testpassword", take_keys, "testcarrier");
+</pre>
+		</div>
+		<h1 class="main" id="dangers">Dangers of (Javascript) cryptography</h1>
+		<div class="main">
+			<p class="main">
+				Javascript cryptography allows HTML5 apps to be cryptographic
+				applications. This of course has many advantages: HTML5 apps 
+				run on nearly any device (desktop, tablet, mobile...), are easy
+				to create and look better than native applications (most times).
+			</p>
+			<p class="main">
+				Still, recently several Javascript crypto apps had security holes
+				and severe bugs. Some of these flaws were bad enough no cryptography
+				at all would've been better than the kind of "fake security" these
+				applications brought.
+			</p>
+			<p class="main">
+				While bugs are never completely avoidable,
+				some of the "typical javascript crypto app problems" could've be avoided
+				easily.
+			</p>
+			<p class="main">
+				There are two factors that may contribute to such problems, or to
+				their avoidance:<br>
+				a) Javascript cryptography is not cryptography in a native application.
+				Scripts in webapps are sent over the network, allowing an attacker to
+				interfere. (This of course does not apply for add-ons or HTML5 based
+				installed mobile apps.)<br>
+				b) Cryptography is not the next best hip HTML5 feature, but something
+				that requires a lot of care and never will provide 100% security. 
+				The first thing attackers search for is some kind of security hole - a
+				chance to inject a malicious script, giving a faked key to a user. Search for holes
+				before they do.
+			</p>
+			<p class="main">
+				Please read <a href="http://www.matasano.com/articles/javascript-cryptography/"
+				target="_blank">Javascript Cryptography Considered Harmful</a>. cipherJS
+				of course does not agree that one should just avoid Javascript cryptography, 
+				but that you should know the dangers described there before working
+				with cryptography in Javascript. 
+			</p>
+		</div>
+		<div class="main" id="transmit">
+			<h2 class="main">Transmit scripts securely</h2>
+			<p class="main">
+				It is surprisingly easy for an attacker to interfere with HTTP traffic. They
+				may just inject a malicious script, and catch all the data before it is 
+				encrypted.
+			</p>
+			<p class="main">
+				There are two possible solutions. One is not to develop a web application, but
+				an add-on and maybe a HTML5 mobile app for common smartphone OS'. The other
+				solution is to work with decent HTTPS.
+			</p>
+			<p class="main">
+				The add-on and possible app solution is the cheapest and most secure. It 
+				is not much different from developing and distributing a desktop application.
+			</p>
+			<p class="main">
+				The HTTPS solution is more expensive and - as you need to configure everything
+				correctly - maybe a bit more difficult, depending on whether you try to do
+				everything yourself or find some reliable hosting.<br>
+				Take care no external scripts served over HTTP are included. Take care as well
+				you trust the hoster of external scripts, or host all the scripts yourself
+				(yes, jQuery or a lightweight replacement you might find is meant as well).
+			</p>
+		</div>
+		<div class="main" id="keystorage">
+			<h2 class="main">Storing keys on a server</h2>
+			<p class="main">
+				In cipherJS keysets, all secret keys are symmetrically encrypted with the users
+				password. Default is a combination of AES and Twofish, with 256 bit keys and
+				1000 PBKDF2 iterations. <br>
+				This sounds like a sensible default, and no one should most likely
+				be able to crack the encryption
+				of the keys.
+			</p>
+			<p class="main">
+				Still, it is not necessarily a good idea to store keys on a server.<br>
+				If a user looses their password, there's only one solution: Securily wiping
+				the keyset from their disk so no one else may decrypt the messages with the
+				password and keyset. If the keyset is on a server, and an attacker gets the
+				password, the attacker may read all the messages. If the user stores their
+				keyset on their local disk only, they might delete it before the attacker
+				gets it.
+			</p>
+			<p class="main">
+				An option is only storing public keys online and full keysets locally, 
+				for example
+				one per device in HTML5 storage. This would result in a user having multiple
+				keysets.
+			</p>
+			<p class="main">
+				Still, it could be better allowing users to export their keys as a file and 
+				use them with their same account on another device. They would never be on the
+				server, but users would just "export" them from their 
+				own disk and "import" them
+				to their HTML5 storage or a folder on another device.<br>
+				With a usable graphic interface (do not expect "normal" users to fiddle with
+				config files), this may be the best solution.<br>
+				If you use HTML5 storage, try and use the HTML5 file API to create a keyset
+				backup as a local file. HTML5 storage is limited and easily deleted.
+			</p>
+			<p class="main">
+				If you absolutely need to store keysets on a server, give users the option to
+				use keyfiles in addition to passwords.
+			</p>
+			<p class="main">
+				You may give users up to 4 options: Store their keysets on your server and just
+				use a password, store on a server with password and local keyfile, store keys 
+				locally with a password, or store keys locally with password and (local) keyfile.
+			</p>
+		</div>
+		<div class="main" id="transparency">
+			<h2 class="main">Trust in your application</h2>
+			<p class="main">
+				As always, users have to trust your application it does what you claim it does.
+				In fact, no matter what way you choose to proof your application secure,
+				it could almost always still be a lie. So aim for as much proof as possible.
+			</p>
+			<p class="main">
+				Generally, there are two ways of proving an application does what it says. The
+				first one is publishing it as an open source project, best on a large open source
+				hosting such as Github or SourceForge. The second one is rather expensive and
+				involves a security company to certify the security of your application - which
+				would need another check for each update, no matter how little it is, that changes
+				the binaries.<br>
+				Publishing the code seems to be much easier and cheaper. Users could still pay 
+				for using your servers (mailserver, chatserver...), so you could sell the service
+				and keep the client application open, no need for security analysis.
+			</p>
+			<p class="main">
+				In Javascript, especially in add-ons, you have one more great way to allow users
+				to check you're not cheating.<br>
+				When transferring scripts over the network, you may choose minified scripts to
+				limit your and your users bandwidth usage.<br>
+				But when distruting an add-on, focus on readable Javascript, use non-minified scripts.
+				An add-on is only downloaded once for install, and then no more. Twice the filesize
+				is worth readable Javascript - anyone could just unpack the add-on file and see
+				what is bundled there.
+			</p>
+		</div>
+		<div class="main" id="mim">
+			<h2 class="main">The man in the middle attack</h2>
+			<p class="main">
+				All crypto applications using public key cryptography 
+				have to deal with the problem of the "Man in the Middle"-Attack.
+				<br>
+				At the moment, there is no mathematical/ cryptographical/ technical solution
+				to this problem - yes, none.
+			</p>
+			<p class="main">
+				As the MiM attack is well described in thousands of articles on the
+				internet, there's no need in redescribing it here. 
+				<a href="https://en.wikipedia.org/wiki/Man-in-the-middle_attack" target="_blank">Even the Wikipedia article</a>
+				already gives pretty much all the information needed for working
+				with cipherJS.
+			</p>
+			<p class="main">
+				Today's only answer to the MiM attack is a PKI (Public Key Infrastructure).
+				For cipherJS, this could mean a) spread public keysets as widely as possible
+				and b) display contacts' public keyset IDs to users in your application.
+			</p>
+			<p class="main">
+				For group conversation keys you might use in an application, 
+				a short representation (colors, a short string ...) could
+				be displayed to all users, so they can manually check whether the
+				keys they see are the same (via phone for example, but 
+				anything is better than no checking at all). 
+				In case of a man in the middle attack, the identifiers for conversation
+				keys would differ.<br>
+				Read <a href="https://www.schneier.com/blog/archives/2008/07/maninthemiddle_1.html" target="_blank">
+				this article (from Schneier on Security) 
+				</a> for more ideas and approaches. 
+			</p>
+			<p class="main">
+				But please don't rely on color combinations only. A lot of people, many more
+				than you might think, are visually impaired. Some are blind, but some are 
+				"just" colorblind - in fact, 10% of males and 1% of females are colorblind. It
+				confuses and scares users if they and their colorblind contact see different
+				colors thinking there's an attack.<br>
+				Some string representation should always be available, as checking this is 
+				less convenient but less prone to false alarms.
+			</p>
+			<p class="main">
+				<br><br><br>
+			</p>
+		</div>
+	</body>
+</html>

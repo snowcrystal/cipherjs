@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<!--<meta name="robots" content="noindex, nofollow">-->
+		<meta name="robots" content="index, follow">
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+		<meta name="description" content = "cipherJS asym simple example">
+		<meta name="keywords" content = "cipherjs, javascript cipher js, javascript encryption, javascript cryptography, ecc, ecdsa, asynchronous javascript encryption, asymmetric javascript encryption, pgp javascript, openpgp javascript, aes, twofish, serpent, rijndael, asynchronous ecc, ecc rsa javascript, sha javascript, sha1, sha256, sha512, sha javascript, hash, encryption javascript, javascript crypto library, js crypto">
+		<link rel="stylesheet" type="text/css" href="./css/default.css" title="default">
+		<link rel="stylesheet" type="text/css" href="./css/asym.css" title="default">
+		<!--XUI LIBRARY, *NOT* A DEPENDENCY OF cipherJS, JUST A GREAT LIBRARY -->
+		<script type="text/javascript" src="./js/xui/xui.min.js"></script>
+		<!-- SCROLLING CONTROL VIA JAVASCRIPT -->
+		<script type="text/javascript" src="./js/scroll.js"></script>
+		<!-- cipherJS compressed -->
+		<script src="../bin/sjcl.min.js" type="text/javascript"></script>
+		<script src="../bin/jsbn.min.js" type="text/javascript"></script>
+		<script src="../bin/titaniumcore.cipher.min.js" type="text/javascript"></script>
+		<script src="../bin/cipherjs.min.js" type="text/javascript"></script>
+		<!-- TITLE -->
+		<title>Asymmetric Encryption Example</title>
+	</head>
+	<body>
+		<noscript class="main">
+			Sorry, but this page works with Javascript.
+		</noscript>
+		<div class="main asym overlay" id="overlay">
+			<p class="main asym overlay">
+				...
+			</p>
+		</div>
+		<div class="main asym init" id="init">
+			<p class="main asym init" id="entropy">
+			</p>
+			<p class="main asym init" id="entropy_info">
+			</p>
+		</div>
+		<div class="main asym nav" id="nav">
+			
+			<ul id="ul_nav" class="main asym nav">
+				<li class="main asym nav button gen" id="nav_gen">
+					Generate Keyset
+				</li>
+				<li class="main asym nav placeholder">
+					<p></p>
+				</li>
+				<li class="main asym nav button enc" id="nav_enc">
+					Encrypt Message
+				</li>
+				<li class="main asym nav button enc" id="nav_dec">
+					Decrypt Message
+				</li>
+				<li class="main asym nav placeholder">
+					<p></p>
+				</li>
+				<li class="main asym nav button sig" id="nav_sig">
+					Sign Message
+				</li>
+				<li class="main asym nav button sig" id="nav_ver">
+					Verify Message
+				</li>
+				<li class="main asym nav placeholder">
+					<p></p>
+				</li>
+				<li class="main asym nav button encsig" id="nav_enc_sig">
+					Encrypt &amp; Sign Message
+				</li>
+				<li class="main asym nav button encsig" id="nav_dec_ver">
+					Decrypt &amp; Verify Message
+				</li>
+				<li class="main asym nav placeholder">
+					<p></p>
+				</li>
+				<li class="main asym nav button info" id="nav_info">
+					FAQ
+				</li>
+			</ul>
+		</div>
+		<div class="main asym generate" id="generate">
+			<p class="main asym backlink"><span class="main asym backlink generate">Back</span></p>
+			<h1 class="main asym generate">
+				Generate a Keyset
+			</h1>
+			<h2 class="main asym generate">
+				Choose a keysize and a password:
+			</h2>
+			<select class="main asym generate" id="select_generate">
+				<option class="main asym generate" value="256">
+					256 bit
+				</option>
+				<option class="main asym generate" value="521" selected>
+					512 bit
+				</option>
+			</select>
+			<p class="main asym generate">
+				<label class="main asym generate" for="pass_generate1">Password:</label>
+				<input type="password" class="main asym generate" id="pass_generate1" value="">
+			</p>
+			<p class="main asym generate">
+				<label class="main asym generate" for="pass_generate2">Reenter password:</label>
+				<input type="password" class="main asym generate" id="pass_generate2" value="">
+			</p>
+			<button class="main asym generate" id="button_generate">Generate</button>
+			<p class="main asym generate">
+				A keysize of 512 bit is recommended for actual usage.
+				If just for testing or on an extremely slow device, choose
+				256. Even 512 bit keysets will be generated in a few seconds.
+				<br>
+				Minimum length for passwords is 12 characters. 
+				Whitespace will be deleted automatically, so does not count.
+				Please include upper and lower case letters as well as
+				numbers and possibly special characters for a secure 
+				password.
+			</p>
+			<p class="main asym generate">
+				You will receive a keyset which you can save for yourself to
+				encrypt, sign, decrypt and verify messages. Do not forget your
+				password, as you need it to use your keyset, and keep it a secret.
+				<br>
+				You will also receive a public keyset which is the part of your
+				keyset your contacts will need to encrypt messages for you and sign
+				your messages.
+			</p>
+			<h2 class="main asym generate" id="anchor_generate_done">
+				Copy your keyset (and safe it in a textfile):
+			</h2>
+			<p class="main asym generate">
+				As long as *no one, never ever* knows your password, you can
+				store your keyset whereever you like. Just copy it in a textfile, 
+				and store it on your computer, mail it to yourself as an attachment
+				or store whereever you won't loose it. <br>
+				However, if you store this keyset in the cloud, mail it to yourself
+				or upload it to the internet in any other way, be really, really
+				sure no one will ever find out the password.<br>
+				Whether storing on the internet or not: <strong class="main">
+				Always choose a textfile.</strong> Open
+				a texteditor (like Notepad/"Editor" on Windows), copy in and safe. 
+				Do not change or loose the file. Other
+				but plain text editors (Word, Editor in Webmail, Editor on a blog) may
+				screw up the formatting, which would leave the keyset broken, so only
+				use textfiles. You can upload and mail files just as well.
+			</p>
+			<textarea class="main asym generate" id="keyset_generate" readonly>
+				
+			</textarea>
+			<h2 class="main asym generate">
+				Give your public keyset to your contacts
+			</h2>
+			<p class="main asym generate">
+				Whoever wants to encrypt messages for you or verify your signed
+				messages needs your public keyset. Save it in a file as well, for
+				example as a mailattachment or uploaded somewhere, 
+				and give it to your contacts. The more you spread
+				it, the better it is.<br>
+				Instead of sending files, or in addition to that, you can use
+				paste tools for plain text on the web, such as Pastebin and
+				ZeroPaste. They will not screw up the formatting as well.
+			</p>
+			<textarea class="main asym generate" id="publickeyset_generate" readonly>
+				
+			</textarea>
+		</div>
+		<div class="main asym encrypt" id="encrypt">
+			<p class="main asym backlink"><span class="main asym backlink encrypt">Back</span></p>
+			<h1 class="main asym encrypt">Encrypt a Message</h1>
+			<h2 class="main asym encrypt">Paste receivers' public keysets</h2>
+			<p class="main asym encrypt">
+				Paste receivers public keysets here, one after the other, as plain text - 
+				do not include any delimiters such as commas. There
+				should be nothing or nothing but whitespace between the keysets.
+			</p>
+			<textarea class="main asym encrypt" id="pubkeys_encrypt">
+			</textarea>
+			<h2 class="main asym encrypt">Write your message</h2>
+			<textarea class="main asym encrypt" id="cleartext_encrypt">
+			</textarea>
+			<button class="main asym encrypt" id="button_encrypt">Encrypt</button>
+			<h2 class="main asym encrypt" id="anchor_encrypt_done">Send this message to its receivers</h2>
+			<p class="main asym encrypt">
+				Copy the text below. Open a texteditor (like Notepad/"Editor" on Windows),
+				paste the text and save the file. Send it to its receivers.
+			</p>
+			<textarea class="main asym encrypt" id="message_encrypt" readonly>
+			</textarea>
+		</div>
+		<div class="main asym decrypt" id="decrypt">
+			<p class="main asym backlink"><span class="main asym backlink encrypt">Back</span></p>
+			<h1 class="main asym decrypt">Decrypt a Message</h1>
+			<h2 class="main asym decrypt">Paste your (full) keyset</h2>
+			<p class="main asym decrypt">
+				Paste your own keyset here. This is not the public only keyset 
+				you give to your contacts, but the one you generated for yourself.
+			</p>
+			<textarea class="main asym decrypt" id="keyset_decrypt">
+			</textarea>
+			<label class="main asym decrypt" for="pass_decrypt">Password for your keyset:</label>
+			<input type="password" class="main asym decrypt" id="pass_decrypt">
+			<h2 class="main asym decrypt">Paste the message</h2>
+			<p class="main asym decrypt">Paste the message you wish to decrypt below.</p>
+			<textarea class="main asym decrypt" id="message_decrypt">
+			</textarea>
+			<button class="main asym decrypt" id="button_decrypt">
+				Decrypt
+			</button>
+			<h2 class="main asym decrypt" id="anchor_decrypt_done">
+				If everything worked, here's your message</h2>
+			<textarea class="main asym decrypt" id="cleartext_decrypt" readonly>
+			</textarea>
+		</div>
+		<div class="main asym sign" id="sign">
+			<p class="main asym backlink"><span class="main asym backlink encrypt">Back</span></p>
+			<h1 class="main asym sign">Sign a Message</h1>
+			<h2 class="main asym sign">Paste your (full) keyset</h2>
+			<textarea class="main asym sign" id="keyset_sign">
+			</textarea>
+			<label class="main asym sign" for="pass_sign">Password for your keyset:</label>
+			<input type="password" class="main asym sign" id="pass_sign">
+			<h2 class="main asym sign">Paste the message</h2>
+			<textarea class="main asym sign" id="cleartext_sign">
+			</textarea>
+			<button class="main asym sign" id="button_sign">
+				Sign
+			</button>
+			<h2 class="main asym sign" id="anchor_sign_done">Send this message to its receivers</h2>
+			<textarea class="main asym sign" id="message_sign" readonly>
+			</textarea>
+		</div>
+		<div class="main asym verify" id="verify">
+			<p class="main asym backlink"><span class="main asym backlink encrypt">Back</span></p>
+			<h1 class="main asym verify">Verify a Message</h1>
+			<h2 class="main asym verify">Paste sender's public keyset</h2>
+			<textarea class="main asym verify" id="publickeyset_verify">
+			</textarea>
+			<h2 class="main asym verify">Paste the message to verify</h2>
+			<textarea class="main asym verify" id="message_verify">
+				
+			</textarea>
+			<button class="main asym verify" id="button_verify">Verify</button>
+			<h2 class="main asym verify" id="anchor_verify_done">This is your message:</h2>
+			<label class="main asym verify" for="verified_verify">Verified?</label>
+			<input class="main asym verify" id="verified_verify">
+			<textarea class="main asym verify" id="cleartext_verify" readonly></textarea>
+		</div>
+		<div class="main asym encryptsign" id="encryptsign">
+			<p class="main asym backlink"><span class="main asym backlink encrypt">Back</span></p>
+			<h1 class="main asym encryptsign">Encrypt and Sign a Message</h1>
+			<h2 class="main asym encryptsign">Paste receivers' public keysets</h2>
+			<textarea class="main asym encryptsign" id="pubkeys_encryptsign">
+			</textarea>
+			<p class="main asym encrypt">
+				Paste receivers public keysets here, one after the other, as plain text - 
+				do not include any delimiters such as commas. There
+				should be nothing or nothing but whitespace between the keysets.
+			</p>
+			<h2 class="main asym encryptsign">Paste your (full) keyset</h2>
+			<textarea class="main asym encryptsign" id="keyset_encryptsign">
+			</textarea>
+			<label class="main asym encryptsign" for="pass_encryptsign">Password for your keyset:</label>
+			<input type="password" class="main asym encryptsign" id="pass_encryptsign">
+			<h2 class="main asym encryptsign">Write your message</h2>
+			<textarea class="main asym encryptsign" id="cleartext_encryptsign">
+			</textarea>
+			<button class="main asym encryptsign" id="button_encryptsign">Encrypt &amp; Sign</button>
+			<h2 class="main asym encryptsign" id="anchor_encryptsign_done">
+				Send this message to its receivers</h2>
+			<textarea class="main asym encryptsign" id="message_encryptsign" readonly>
+			</textarea>
+		</div>
+		<div class="main asym decryptverify" id="decryptverify">
+			<p class="main asym backlink"><span class="main asym backlink encrypt">Back</span></p>
+			<h1 class="main asym decryptverify">Decrypt and Verify a Message</h1>
+			<h2 class="main asym decryptverify">Paste your (full) keyset</h2>
+			<textarea class="main asym decryptverify" id="keyset_decryptverify">
+			</textarea>
+			<label class="main asym decryptverify" for="pass_decryptverify">Password for your keyset:</label>
+			<input class="main asym decryptverify" type="password" id="pass_decryptverify">
+			<h2 class="main asym decryptverify">Paste sender's public keyset</h2>
+			<textarea class="main asym decryptverify" id="publickeyset_decryptverify">
+			</textarea>
+			<h2 class="main asym decryptverify">Paste the message</h2>
+			<textarea class="main asym decryptverify" id="message_decryptverify">
+			</textarea>
+			<button class="main asym decryptverify" id="button_decryptverify">Decrypt &amp; Verify</button>
+			<h2 class="main asym decryptverify" id="anchor_decryptverify_done">
+				If everything worked, here's your message</h2>
+			<label class="main asym decryptverify" for="verified_decryptverify">Verified?</label>
+			<input class="main asym decryptverify" id="verified_decryptverify">
+			<textarea class="main asym decryptverify" id="cleartext_decryptverify">
+			</textarea>
+		</div>
+		<div class="main asym info" id="info">
+			<p class="main asym backlink"><span class="main asym backlink encrypt">Back</span></p>
+			<h2 class="main asym info" id="info_enc">How do I generate and use a keyset?</h2>
+			<p class="main asym info">
+				To use this application, you need a keyset. A keyset can be generated after specifying
+				a keylength (521 bit is recommended, 256 bit if you are 
+				on a very weak device) and a password.<br>
+				You should never tell, write down or lose your password, as the security 
+				depends on it staying a secret. So choose a password that is hard to guess, but easy to remember. If
+				you write it down for a while, use pen and paper - a paper is easily thrown away,
+				while safely wiping files on a hard disk is much more annoying. <br>
+				Good passwords are 20 characters or longer, contain letters (upper- and lower case),
+				numbers and possibly special characters. 
+			</p>
+			<p class="main asym info">
+				After generating keys, you receive two keysets: A full keyset, and a public keyset.
+				The <strong class="main">full keyset</strong> will be used by you, to decrypt messages
+				and sign messages. The <strong class="main">public keyset</strong> is what your contacts
+				need if they want to encrypt messages for you and verify your signed messages.
+			</p>
+			<p class="main asym info">
+				The <strong class="main">full keyset</strong> has to be stored where you won't loose
+				it. A textfile on your computer is fine. This file does not have to be hidden or placed
+				in an especially secure place, as the keyset is completely useless without your password.
+				This, however, means: Store the keyset anywhere as long as you do not write down or
+				tell your password.<br>
+				If you're confident no one will ever find out the password, you can mail the file to yourself
+				or store it in the cloud to avoid losing it. If you're not so sure the password will
+				always be your secret, put the file on a small USB stick, as this is much easier to
+				wipe than a hard disk is (if your password is cracked, wipe the keyset - you'll need a
+				new one).<br>
+				If your password is ever exposed, delete (securely wipe) your keyset. This
+				isn't possible if your mail or could storage provider already had the file, so if that
+				could happen, only store locally.
+			</p>
+			<p class="main asym info">
+				The <strong class="main">public keyset</strong> is what your contacts need. They can use
+				it to encrypt messages for you and verify your messages.<br>
+				The public keyset is the more secure the more public it is. 
+				Mail it to your contacts, store it on a website or blog, use a paste tool like PasteBin
+				and ZeroPaste. If the password of your full keyset is ever found out, it doesn't matter
+				where the public keyset still is, it does not have to be wiped, so you don't have to 
+				consider this when publishing it.<br>
+				Text files are the best way to store your public keyset, as they do not screw up 
+				formatting.<br>
+				The more ways you use to spread your public keyset, the less likely it is someone will
+				cheat your contacts with a fake keyset. You yourself should look at the keysets of
+				your contacts when encrypting messages for them: Does the long string between the
+				"&lt;id&gt;" and "&lt;/id&gt;" tags stay the same? Then it is the same keyset. If the
+				ID suddenly changes, ask the contact whether they really changed their keyset or you've
+				been given a fake one.
+			</p>
+			<h2 class="main asym info">How do I use the forms?</h2>
+			<p class="main asym info">
+				The forms on this page expect text input, so you copy in your keysets and messages
+				as well as enter your password if asked for.<br>
+				Messages and keysets are best stored in textfiles, which do not interfere with
+				formatting.
+			</p>
+			<p class="main asym info">
+				A message that has been <strong class="main">encrypted</strong> by a contact 
+				using your <strong class="main">public
+				keyset</strong> can only be decrypted by you using your <strong class="main">full
+				keyset</strong> and password.
+			</p>
+			<p class="main asym info">
+				A message which has been <strong class="main">signed</strong> using 
+				your <strong class="main">full keyset</strong>
+				can be verified using your <strong class="main">public keyset</strong>.
+			</p>
+			<p class="main asym info">
+				The safest way of sending someone a message no one else can read is to both
+				encrypt and sign it. By signing, the receivers know it actually came from
+				you (or the owner of your full keyset and password...) and encryption makes
+				sure only the actual recipient can decrpyt it. So it is recommended to always
+				use encrypt and sign if possible.
+			</p>
+			<p class="main asym info">
+			</p>
+		</div>
+		<script src="./js/asym.js" type="text/javascript"></script>
+	</body>
+</html>
