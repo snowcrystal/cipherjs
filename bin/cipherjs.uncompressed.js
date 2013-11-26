@@ -2719,6 +2719,15 @@ this.generateKeys = function(curve, pass, callback, carrier){
  * ---------------------------------------------------------------------
  * @param   {Array<Object>}   public_keys   Array of public key objects
  * @param   {String}          cleartext     Cleartext to encrypt
+ * @param   {String}          symkey        Optional symmetric key, so the
+ *                                          receivers can still decrypt
+ *                                          using their private key, but 
+ *                                          whoever already knows the @symkey
+ *                                          can decrypt calling
+ *                                          cipherJS.asym.symDecryptAsync(msg.between("<content>", "</content>"), symkey, callback, carrier)
+ *                                          Just don't provide it if all
+ *                                          receivers will decrypt with their
+ *                                          private keys, it is not necessary then.
  * @carries {Object}          carrier
  * @calls   {Function}        callback      function(Object enc, Object carrier)
  *                                              enc:
@@ -2735,9 +2744,16 @@ this.generateKeys = function(curve, pass, callback, carrier){
  *                                                                       "theirs")
  *                                                  String ciphertext
  * */
-this.encryptString = function(public_keys, cleartext, callback, carrier){
+this.encryptString = function(public_keys, cleartext, callback, carrier, symkey){
 	var len = public_keys.length; var i = 0;
-	var randkey = cipherJS.asym.randomKeyString();
+	
+	var randkey = "";
+	if(typeof symkey == "string" || typeof symkey == "String"){
+		randkey = symkey;
+	}else{
+		randkey = cipherJS.asym.randomKeyString();
+	}
+	
 	var enckeys = new Array();
 	carrier = {"callback": callback, "outercarrier": carrier, "cleartext": cleartext,
 	           "pks": public_keys, "len": len, "i": i, "randkey": randkey, "eks": enckeys};
@@ -2908,6 +2924,15 @@ this.verifySignature = function(sender_keyset, cleartext, signature, callback, c
  * @param   {Array<Object>}   recv_keysets   Receivers' public keysets
  * @param   {String}          sender_keyset  Sender's full keyset
  * @param   {String}          pass           Password for @sender_keyset
+ * @param   {String}          symkey         Optional symmetric key, so the
+ *                                           receivers can still decrypt
+ *                                           using their private key, but 
+ *                                           whoever already knows the @symkey
+ *                                           can decrypt calling
+ *                                           cipherJS.asym.symDecryptAsync(msg.between("<content>", "</content>"), symkey, callback, carrier)
+ *                                           Just don't provide it if all
+ *                                           receivers will decrypt with their
+ *                                           private keys, it is not necessary then.
  * @carries {Object}          carrier
  * @calls   {Function}        callback       function(Object enc, Object carrier)
  *                                              enc:
@@ -2925,9 +2950,10 @@ this.verifySignature = function(sender_keyset, cleartext, signature, callback, c
  *                                                  String ciphertext
  *                                                  String signature
  * */
-this.encryptAndSignString = function(recv_keysets, sender_keyset, pass, cleartext, callback, carrier){
+this.encryptAndSignString = function(recv_keysets, sender_keyset, pass, cleartext, callback, carrier, symkey){
 	carrier = { "callback": callback, "outercarrier": carrier, 
 	            "cleartext": cleartext, "recv_keysets": recv_keysets };
+	carrier.symkey = symkey;
 	cipherJS.asym.signString(sender_keyset, pass, cleartext, function(signed, carrier){
 		carrier.signature = signed.signature;
 		cipherJS.asym.encryptString(carrier.recv_keysets, carrier.cleartext, function(enc, carrier){
@@ -2936,7 +2962,7 @@ this.encryptAndSignString = function(recv_keysets, sender_keyset, pass, cleartex
 				carrier.callback(enc, carrier.outercarrier);
 			};
 			setTimeout(cbfn, cipherJS.asym.asyncTimeout);
-		}, carrier);
+		}, carrier, carrier.symkey);
 	}, carrier);
 };
 //---END-ENCRYPT-AND-SIGN-STRING----------------------------------------
@@ -3177,10 +3203,19 @@ this.generateKeyset = function(curve, pass, callback, carrier){
  * ---------------------------------------------------------------------
  * @param   {Array<String>}   recv_keysets   Array of receiver keysets
  * @param   {String}          cleartext      Cleartext to encrypt
+ * @param   {String}          symkey         Optional symmetric key, so the
+ *                                           receivers can still decrypt
+ *                                           using their private key, but 
+ *                                           whoever already knows the @symkey
+ *                                           can decrypt calling
+ *                                           cipherJS.asym.symDecryptAsync(msg.between("<content>", "</content>"), symkey, callback, carrier)
+ *                                           Just don't provide it if all
+ *                                           receivers will decrypt with their
+ *                                           private keys, it is not necessary then.
  * @carries {Object}          carrier
  * @calls   {Function}        callback       function(String message, Object carrier)
  * */
-this.encryptMessage = function(recv_keysets, cleartext, callback, carrier){
+this.encryptMessage = function(recv_keysets, cleartext, callback, carrier, symkey){
 	carrier = {"callback": callback, "outercarrier": carrier};
 	var len = recv_keysets.length;
 	for(var i=0; i<len; i++){
@@ -3192,7 +3227,7 @@ this.encryptMessage = function(recv_keysets, cleartext, callback, carrier){
 			carrier.callback(msg, carrier.outercarrier);
 		};
 		setTimeout(cbfn, cipherJS.asym.asyncTimeout);
-	}, carrier);
+	}, carrier, symkey);
 };
 
 /**
@@ -3265,10 +3300,19 @@ this.verifyMessage = function(sender_keyset, msg, callback, carrier){
  * @param   {String}          sender_keyset   Sender's full keyset
  * @param   {String}          pass            Password for @sender_keyset
  * @param   {String}          cleartext       Cleartext to encrypt
+ * @param   {String}          symkey          Optional symmetric key, so the
+ *                                            receivers can still decrypt
+ *                                            using their private key, but 
+ *                                            whoever already knows the @symkey
+ *                                            can decrypt calling
+ *                                            cipherJS.asym.symDecryptAsync(msg.between("<content>", "</content>"), symkey, callback, carrier)
+ *                                            Just don't provide it if all
+ *                                            receivers will decrypt with their
+ *                                            private keys, it is not necessary then.
  * @carries {Object}          carrier
  * @calls   {Function}        callback        function(String message, Object carrier)
  * */
-this.encryptAndSignMessage = function(recv_keysets, sender_keyset, pass, cleartext, callback, carrier){
+this.encryptAndSignMessage = function(recv_keysets, sender_keyset, pass, cleartext, callback, carrier, symkey){
 	carrier = {"callback": callback, "outercarrier": carrier};
 	var len = recv_keysets.length;
 	for(var i=0; i<len; i++){
@@ -3281,7 +3325,7 @@ this.encryptAndSignMessage = function(recv_keysets, sender_keyset, pass, clearte
 			carrier.callback(enc, carrier.outercarrier);
 		};
 		setTimeout(cbfn, cipherJS.asym.asyncTimeout);
-	}, carrier);
+	}, carrier, symkey);
 };
 
 /**
